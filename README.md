@@ -6,7 +6,6 @@ Una aplicación web moderna para rastrear y gestionar tus viajes aéreos. La apl
 
 - 🛫 Búsqueda de información de vuelos por códigos IATA
 - 📊 Cálculo de distancias y tiempos estimados de vuelo
-- 📱 Interfaz moderna con animaciones y diseño responsivo
 - 💾 Guardado de historial de viajes
 - 🗑️ Gestión de viajes (eliminación individual o masiva)
 
@@ -41,16 +40,6 @@ MONGODB_URI=tu_uri_de_mongodb
 4. Inicia el servidor de desarrollo:
 ```bash
 npm run dev
-```
-
-## Estructura del Proyecto
-
-```
-travel-tracker/
-├── client/                 # Frontend React
-├── server/                 # Backend Node.js
-├── .env                    # Variables de entorno
-└── README.md              # Documentación
 ```
 
 ## Contribución

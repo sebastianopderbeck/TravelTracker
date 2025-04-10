@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import { keyframes } from '@mui/system';
+import { Box, keyframes } from '@mui/material';
+import FlightIcon from '@mui/icons-material/Flight';
+import PublicIcon from '@mui/icons-material/Public';
 
 const float = keyframes`
   0% {
@@ -29,6 +30,100 @@ const pulse = keyframes`
   }
 `;
 
+const planeAnimation = keyframes`
+  0% {
+    transform: translateX(-100px) translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 100px)) translateY(100px) rotate(10deg);
+    opacity: 0;
+  }
+`;
+
+const trailAnimation = keyframes`
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    width: 200px;
+    opacity: 0;
+  }
+`;
+
+const Country = ({ delay, top, left, size, color }) => (
+  <Box
+    sx={{
+      position: 'absolute',
+      top: `${top}%`,
+      left: `${left}%`,
+      animation: `${float} 8s ease-in-out infinite`,
+      animationDelay: `${delay}s`,
+      zIndex: 1,
+    }}
+  >
+    <PublicIcon
+      sx={{
+        fontSize: size,
+        color: color,
+        filter: 'drop-shadow(0 0 8px rgba(0,0,0,0.1))',
+      }}
+    />
+  </Box>
+);
+
+const Plane = ({ delay, top, size, color }) => (
+  <Box
+    sx={{
+      position: 'absolute',
+      top: `${top}%`,
+      left: 0,
+      animation: `${planeAnimation} 20s linear infinite`,
+      animationDelay: `${delay}s`,
+      zIndex: 1,
+    }}
+  >
+    <Box
+      sx={{
+        position: 'relative',
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          top: '50%',
+          left: '-200px',
+          height: '2px',
+          background: `linear-gradient(to right, ${color}00, ${color}80)`,
+          animation: `${trailAnimation} 15s linear infinite`,
+          animationDelay: `${delay}s`,
+          transform: 'translateY(-50%)',
+        },
+      }}
+    >
+      <FlightIcon
+        sx={{
+          fontSize: size,
+          color: color,
+          transform: 'rotate(90deg)',
+          opacity: 0.7,
+        }}
+      />
+    </Box>
+  </Box>
+);
+
 const AnimatedBackground = () => {
   return (
     <Box
@@ -38,53 +133,17 @@ const AnimatedBackground = () => {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: -1,
         overflow: 'hidden',
+        zIndex: 0,
         background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
       }}
     >
-      {/* Círculos flotantes */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '10%',
-          left: '10%',
-          width: '150px',
-          height: '150px',
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.2)',
-          backdropFilter: 'blur(5px)',
-          animation: `${float} 6s ease-in-out infinite`,
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '60%',
-          right: '15%',
-          width: '200px',
-          height: '200px',
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.15)',
-          backdropFilter: 'blur(5px)',
-          animation: `${float} 8s ease-in-out infinite`,
-          animationDelay: '1s',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '15%',
-          left: '20%',
-          width: '120px',
-          height: '120px',
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(5px)',
-          animation: `${float} 7s ease-in-out infinite`,
-          animationDelay: '2s',
-        }}
-      />
+      {/* Países flotantes */}
+      <Country delay={0} top={10} left={10} size="4rem" color="rgba(25, 118, 210, 0.7)" />
+      <Country delay={2} top={60} left={80} size="5rem" color="rgba(46, 125, 50, 0.6)" />
+      <Country delay={4} top={30} left={40} size="3.5rem" color="rgba(156, 39, 176, 0.5)" />
+      <Country delay={1} top={70} left={20} size="4.5rem" color="rgba(211, 47, 47, 0.6)" />
+      <Country delay={3} top={40} left={70} size="3rem" color="rgba(255, 152, 0, 0.7)" />
       
       {/* Elementos pulsantes */}
       <Box
@@ -114,6 +173,11 @@ const AnimatedBackground = () => {
           animationDelay: '1.5s',
         }}
       />
+
+      {/* Aviones sutiles */}
+      <Plane delay={0} top={15} size="2rem" color="rgba(255, 255, 255, 0.8)" />
+      <Plane delay={8} top={75} size="2.5rem" color="rgba(255, 255, 255, 0.6)" />
+      <Plane delay={15} top={45} size="3rem" color="rgba(255, 255, 255, 0.4)" />
     </Box>
   );
 };
