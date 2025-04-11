@@ -139,7 +139,7 @@ const AnimatedBackground = () => {
       }}
     >
       {/* Países flotantes */}
-      <Country delay={0} top={10} left={10} size="4rem" color="rgba(25, 118, 210, 0.7)" />
+      <Country delay={0} top={7} left={50} size="4rem" color="rgba(25, 118, 210, 0.7)" />
       <Country delay={2} top={60} left={80} size="5rem" color="rgba(46, 125, 50, 0.6)" />
       <Country delay={4} top={30} left={40} size="3.5rem" color="rgba(156, 39, 176, 0.5)" />
       <Country delay={1} top={70} left={20} size="4.5rem" color="rgba(211, 47, 47, 0.6)" />

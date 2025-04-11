@@ -1,75 +1,66 @@
-import React from 'react';
-import { Box, Container, Grid, Paper, Typography, useTheme } from '@mui/material';
+import { useState } from 'react';
+import { Box, Container, Typography, Paper, Grid } from '@mui/material';
 import FlightSearch from './components/FlightSearch';
-import TravelList from './components/TravelList';
+import TravelHistory from './components/TravelHistory';
+import TravelDashboard from './components/TravelDashboard';
 import AnimatedBackground from './components/AnimatedBackground';
+import { useGetTravelsQuery } from './services/travelApi';
 
 function App() {
-  const theme = useTheme();
+  const { data: travels = [], isLoading } = useGetTravelsQuery();
 
   return (
-    <Box sx={{ minHeight: '100vh', position: 'relative' }}>
+    <Box>
       <AnimatedBackground />
-      <Container maxWidth="lg">
-        <Box sx={{ pt: 6, pb: 6 }}>
-          <Typography 
-            variant="h3" 
-            component="h1" 
-            align="center" 
-            gutterBottom
-            sx={{ 
-              fontWeight: 700,
-              mb: 4,
-              color: theme.palette.primary.main,
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              animation: 'fadeIn 1s ease-in-out',
-              '@keyframes fadeIn': {
-                '0%': { opacity: 0, transform: 'translateY(-20px)' },
-                '100%': { opacity: 1, transform: 'translateY(0)' }
-              }
-            }}
-          >
-            Rastreador de Viajes
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Paper 
-                elevation={6} 
-                sx={{ 
-                  p: 3, 
-                  borderRadius: 2,
-                  backdropFilter: 'blur(10px)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                  transition: 'transform 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                    boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
-                  }
-                }}
-              >
-                <FlightSearch />
-              </Paper>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Paper 
-                elevation={6} 
-                sx={{ 
-                  p: 3, 
-                  borderRadius: 2,
-                  backdropFilter: 'blur(10px)',
-                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                  transition: 'transform 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                    boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
-                  }
-                }}
-              >
-                <TravelList />
-              </Paper>
-            </Grid>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, py: 1 }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 700,
+            mb: 2,
+            color: 'primary.main',
+            textAlign: 'left',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            position: 'relative',
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              bottom: -8,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 100,
+              height: 4,
+              backgroundColor: 'primary.main',
+              borderRadius: 2,
+            },
+          }}
+        >
+          Travel Traker
+        </Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4.2}>
+              <FlightSearch />      
           </Grid>
-        </Box>
+          <Grid item xs={12} md={4.2}>
+            <TravelHistory travels={travels} isLoading={isLoading} />
+          </Grid>
+          <Grid item xs={12} md={3.6}>
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                p: 4, 
+                background: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: 2,
+              }}
+            >
+              <TravelDashboard travels={travels} />
+            </Paper>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

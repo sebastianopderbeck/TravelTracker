@@ -9,6 +9,10 @@ export const travelApi = createApi({
       query: () => 'travels',
       providesTags: ['Travel'],
     }),
+    getTravelStats: builder.query({
+      query: () => 'travels/stats',
+      providesTags: ['Travel'],
+    }),
     getFlightInfo: builder.query({
       query: ({ origin, destination }) => `flight-info?origin=${origin}&destination=${destination}`,
     }),
@@ -39,6 +43,7 @@ export const travelApi = createApi({
 
 export const {
   useGetTravelsQuery,
+  useGetTravelStatsQuery,
   useGetFlightInfoQuery,
   useAddTravelMutation,
   useDeleteTravelMutation,

@@ -1,17 +1,52 @@
-import React from 'react';
-import { Box, Paper, Typography, Grid, CircularProgress, Alert } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Paper, CircularProgress } from '@mui/material';
 import { useGetTravelStatsQuery } from '../services/travelApi';
 import FlightIcon from '@mui/icons-material/Flight';
-import PublicIcon from '@mui/icons-material/Public';
 import SpeedIcon from '@mui/icons-material/Speed';
-import TimerIcon from '@mui/icons-material/Timer';
+import PublicIcon from '@mui/icons-material/Public';
+import ExploreIcon from '@mui/icons-material/Explore';
 
-const StatCard = ({ title, value, icon, color }) => (
+const AnimatedNumber = ({ value, duration = 2000, unit = '' }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (value && !isAnimating) {
+      setIsAnimating(true);
+      const startTime = Date.now();
+      const endTime = startTime + duration;
+      const startValue = 0;
+
+      const animate = () => {
+        const now = Date.now();
+        const progress = Math.min((now - startTime) / duration, 1);
+        const currentValue = Math.floor(startValue + (value - startValue) * progress);
+        setDisplayValue(currentValue);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          setIsAnimating(false);
+        }
+      };
+
+      animate();
+    }
+  }, [value, duration]);
+
+  return (
+    <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
+      {displayValue.toLocaleString()} {unit}
+    </Typography>
+  );
+};
+
+const StatCard = ({ title, value, icon, color, isAnimated = false }) => (
   <Paper
-    elevation={3}
+    elevation={2}
     sx={{
       p: 3,
-      height: '100%',
+      mb: 2,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -19,10 +54,26 @@ const StatCard = ({ title, value, icon, color }) => (
       backgroundColor: 'rgba(255, 255, 255, 0.9)',
       borderRadius: 2,
       transition: 'all 0.3s ease',
+      position: 'relative',
+      overflow: 'hidden',
       '&:hover': {
         transform: 'translateY(-5px)',
         boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
       },
+      '&::before': isAnimated ? {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+        animation: 'shimmer 2s infinite',
+        '@keyframes shimmer': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' }
+        }
+      } : {},
     }}
   >
     <Box
@@ -36,9 +87,13 @@ const StatCard = ({ title, value, icon, color }) => (
     >
       {icon}
     </Box>
-    <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
-      {value}
-    </Typography>
+    {isAnimated ? (
+      <AnimatedNumber value={value} />
+    ) : (
+      <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', mb: 1 }}>
+        {value}
+      </Typography>
+    )}
     <Typography variant="subtitle1" color="text.secondary">
       {title}
     </Typography>
@@ -50,7 +105,7 @@ const TravelDashboard = () => {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
         <CircularProgress />
       </Box>
     );
@@ -58,23 +113,28 @@ const TravelDashboard = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        Error al cargar las estadísticas
-      </Alert>
+      <Box p={2}>
+        <Typography color="error">Error al cargar las estadísticas</Typography>
+      </Box>
     );
   }
 
+  const totalDistance = stats?.totalDistance || 0;
+  const averageDistance = stats?.averageDistance || 0;
+  const totalFlights = stats?.totalFlights || 0;
+  const uniqueCountries = stats?.uniqueCountriesCount || 0;
+
   return (
-    <Box sx={{ mb: 4 }}>
-      <Typography
-        variant="h5"
-        gutterBottom
-        align="center"
-        sx={{
+    <Box>
+      <Typography 
+        variant="h6" 
+        gutterBottom 
+        sx={{ 
           fontWeight: 600,
           mb: 3,
           color: 'primary.main',
           position: 'relative',
+          textAlign: 'center',
           '&:after': {
             content: '""',
             position: 'absolute',
@@ -90,41 +150,42 @@ const TravelDashboard = () => {
       >
         Estadísticas de Viajes
       </Typography>
+      
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <FlightIcon color="primary" sx={{ mr: 2 }} />
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              Total de Viajes
+            </Typography>
+            <AnimatedNumber value={totalFlights} />
+          </Box>
+        </Box>
+      </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <StatCard
-            title="Total de Vuelos"
-            value={stats?.totalFlights || 0}
-            icon={<FlightIcon />}
-            color="primary.main"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <StatCard
-            title="Horas de Vuelo"
-            value={stats?.totalHours.toFixed(1) || 0}
-            icon={<TimerIcon />}
-            color="success.main"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <StatCard
-            title="Distancia Total (km)"
-            value={stats?.totalDistance.toLocaleString() || 0}
-            icon={<SpeedIcon />}
-            color="info.main"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <StatCard
-            title="Países Visitados"
-            value={stats?.countries || 0}
-            icon={<PublicIcon />}
-            color="warning.main"
-          />
-        </Grid>
-      </Grid>
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <PublicIcon color="primary" sx={{ mr: 2 }} />
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              Países Visitados
+            </Typography>
+            <AnimatedNumber value={uniqueCountries} />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <ExploreIcon color="primary" sx={{ mr: 2 }} />
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              Distancia Total Recorrida
+            </Typography>
+            <AnimatedNumber value={totalDistance} unit="km" />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };

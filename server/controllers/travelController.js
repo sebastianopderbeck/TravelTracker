@@ -1,55 +1,108 @@
+import axios from 'axios';
 import Travel from '../models/Travel.js';
 
 // Get travel statistics
-const getTravelStats = async (req, res) => {
+export const getTravelStats = async (req, res) => {
   try {
     const stats = await Travel.aggregate([
       {
         $group: {
           _id: null,
           totalDistance: { $sum: '$distance' },
-          totalEmissions: { $sum: '$emissions' },
+          totalFlights: { $sum: 1 },
           averageDistance: { $avg: '$distance' },
-          averageEmissions: { $avg: '$emissions' }
+          originCountries: { $addToSet: '$origin.country' },
+          destinationCountries: { $addToSet: '$destination.country' }
+        }
+      },
+      {
+        $project: {
+          totalDistance: 1,
+          totalFlights: 1,
+          averageDistance: { $round: ['$averageDistance', 2] },
+          uniqueCountriesCount: {
+            $size: {
+              $setUnion: ['$originCountries', '$destinationCountries']
+            }
+          },
+          allCountries: {
+            $concatArrays: ['$originCountries', '$destinationCountries']
+          }
+        }
+      },
+      {
+        $project: {
+          totalDistance: 1,
+          totalFlights: 1,
+          averageDistance: 1,
+          uniqueCountriesCount: 1,
+          countriesVisits: {
+            $map: {
+              input: { $setUnion: ['$allCountries'] },
+              as: 'country',
+              in: {
+                country: '$$country',
+                quantity: {
+                  $size: {
+                    $filter: {
+                      input: '$allCountries',
+                      as: 'visit',
+                      cond: { $eq: ['$$visit', '$$country'] }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     ]);
-    res.json(stats[0] || { totalDistance: 0, totalEmissions: 0, averageDistance: 0, averageEmissions: 0 });
+
+    res.json(stats[0] || { 
+      totalDistance: 0, 
+      totalFlights: 0,
+      averageDistance: 0,
+      uniqueCountriesCount: 0,
+      countriesVisits: []
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const getTravels = async (req, res) => {
+// Get all travels
+export const getTravels = async (req, res) => {
   try {
-    const travels = await Travel.find().sort({ date: -1 });
+    const travels = await Travel.find().sort({ createdAt: -1 });
     res.json(travels);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const createTravel = async (req, res) => {
+// Create a travel
+export const createTravel = async (req, res) => {
   try {
     const travel = new Travel(req.body);
-    const savedTravel = await travel.save();
-    res.status(201).json(savedTravel);
+    await travel.save();
+    res.status(201).json(travel);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const deleteTravel = async (req, res) => {
+// Delete a travel
+export const deleteTravel = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Travel.findByIdAndDelete(id);
+    await Travel.findByIdAndDelete(req.params.id);
     res.json({ message: 'Travel deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-const deleteAllTravels = async (req, res) => {
+// Delete all travels
+export const deleteAllTravels = async (req, res) => {
   try {
     await Travel.deleteMany({});
     res.json({ message: 'All travels deleted successfully' });
@@ -58,41 +111,69 @@ const deleteAllTravels = async (req, res) => {
   }
 };
 
-const getFlightInfo = async (req, res) => {
+// Get flight information
+export const getFlightInfo = async (req, res) => {
   try {
     const { origin, destination } = req.query;
-    
-    // Aquí deberías implementar la lógica para obtener la información del vuelo
-    // Por ahora, devolvemos datos de ejemplo
-    const flightInfo = {
-      distance: 10000, // en km
-      estimatedFlightTime: 12, // en horas
-      emissions: 2000, // en kg de CO2
+
+    if (!origin || !destination) {
+      return res.status(400).json({ error: 'Se requieren los códigos IATA de origen y destino' });
+    }
+
+    // Obtener información del vuelo desde Aviationstack
+    const response = await axios.get('http://api.aviationstack.com/v1/flights', {
+      params: {
+        access_key: process.env.AVIATIONSTACK_API_KEY,
+        dep_iata: origin.toUpperCase(),
+        arr_iata: destination.toUpperCase(),
+        limit: 1
+      }
+    }).catch(error => {
+      console.error('Error de la API:', error.response?.data || error.message);
+      throw new Error(`Error al consultar la API de Aviationstack: ${error.response?.data?.error?.message || error.message}`);
+    });
+
+    if (!response.data || !response.data.data || response.data.data.length === 0) {
+      throw new Error('No se encontraron vuelos para la ruta especificada');
+    }
+
+    const flight = response.data.data[0];
+
+    // Calcular la duración del vuelo basada en los horarios programados
+    const departureTime = new Date(flight.departure.scheduled);
+    const arrivalTime = new Date(flight.arrival.scheduled);
+    const durationMs = arrivalTime - departureTime;
+    const durationHours = durationMs / (1000 * 60 * 60);
+
+    // Estimar la distancia basada en la duración (asumiendo una velocidad promedio de 800 km/h)
+    const distance = Math.round(durationHours * 800);
+
+    res.json({
       origin: {
-        code: origin,
-        name: 'Ezeiza International Airport',
-        city: 'Buenos Aires',
-        country: 'Argentina'
+        iata: flight.departure.iata,
+        name: flight.departure.airport,
+        city: flight.departure.timezone.split('/')[1].replace('_', ' '),
+        country: flight.departure.timezone.split('/')[0]
       },
       destination: {
-        code: destination,
-        name: 'Barcelona-El Prat Airport',
-        city: 'Barcelona',
-        country: 'Spain'
-      }
-    };
-    
-    res.json(flightInfo);
+        iata: flight.arrival.iata,
+        name: flight.arrival.airport,
+        city: flight.arrival.timezone.split('/')[1].replace('_', ' '),
+        country: flight.arrival.timezone.split('/')[0]
+      },
+      flight: {
+        airline: flight.airline.name,
+        flightNumber: flight.flight.iata,
+        status: flight.flight_status,
+        scheduledDeparture: flight.departure.scheduled,
+        scheduledArrival: flight.arrival.scheduled,
+        duration: durationHours.toFixed(2)
+      },
+      distance,
+      estimatedFlightTime: durationHours.toFixed(1)
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error al obtener información del vuelo:', error);
+    res.status(500).json({ error: 'Error al obtener información del vuelo' });
   }
 };
-
-export {
-  getTravels,
-  createTravel,
-  deleteTravel,
-  deleteAllTravels,
-  getTravelStats,
-  getFlightInfo
-}; 
