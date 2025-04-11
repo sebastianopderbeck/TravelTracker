@@ -192,13 +192,13 @@ const AnimatedBackground = () => {
           }}
         />
         {/* Países flotantes */}
-        <Country delay={0} top={7} left={50} size="4rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Country delay={2} top={60} left={80} size="5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(46, 125, 50, 0.9)"} />
-        <Country delay={4} top={30} left={40} size="3.5rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(156, 39, 176, 0.9)"} />
-        <Country delay={1} top={70} left={20} size="4.5rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(211, 47, 47, 0.9)"} />
-        <Country delay={3} top={40} left={70} size="3rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
-        <Country delay={1} top={80} left={70} size="4rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Country delay={6} top={90} left={90} size="3rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(46, 125, 50, 0.9)"} />
+        <Country delay={0} top={7} left={67} size="4rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(211, 47, 47, 0.9)" } />
+        <Country delay={2} top={60} left={80} size="5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(156, 39, 176, 0.9)"} />
+        <Country delay={4} top={30} left={40} size="3.5rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
+        <Country delay={1} top={70} left={20} size="4.5rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
+        <Country delay={3} top={40} left={70} size="3rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)" } />
+        <Country delay={1} top={80} left={70} size="4rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(211, 47, 47, 0.9)"} />
+        <Country delay={6} top={90} left={90} size="3rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
 
         {/* Elementos pulsantes */}
         <Box
@@ -243,10 +243,10 @@ const AnimatedBackground = () => {
           }}
         />
         {/* Aviones sutiles */}
-        <Plane delay={0} top={15} size="2rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Plane delay={8} top={75} size="2.5rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Plane delay={15} top={45} size="3rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Plane delay={1} top={90} size="2rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
+        <Plane delay={0} top={15} size="2rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)"} />
+        <Plane delay={3} top={75} size="2.5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(211, 47, 47, 0.9)"} />
+        <Plane delay={15} top={45} size="3rem" color={isDark ?  "rgba(25, 118, 210, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
+        <Plane delay={1} top={90} size="2rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
       </BackgroundContainer>
     </>
   );

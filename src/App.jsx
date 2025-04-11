@@ -10,22 +10,35 @@ import { useGetTravelsQuery } from './services/travelApi';
 function App() {
   const { data: travels = [], isLoading } = useGetTravelsQuery();
   const [showContent, setShowContent] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowContent(true);
-    }, 2000); // Mostrar el contenido después de 2 segundos
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <Box>
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
       <AnimatedBackground />
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, py: 1 }}>
-        {!showContent ? (
-          <FlightLoadingAnimation />
-        ) : (
+      {!showContent ? (
+        <Box sx={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          zIndex: 2 
+        }}>
+          <FlightLoadingAnimation isDark={isDark} />
+        </Box>
+      ) : (
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, py: 1 }}>
           <Fade in={showContent} timeout={1000}>
             <Box>
               <Typography 
@@ -89,14 +102,14 @@ function App() {
                       borderRadius: 2,
                     }}
                   >
-                    <TravelDashboard travels={travels} />
+                    <TravelDashboard travels={travels} showContent={showContent} />
                   </Paper>
                 </Grid>
               </Grid>
             </Box>
           </Fade>
-        )}
-      </Container>
+        </Container>
+      )}
     </Box>
   );
 }

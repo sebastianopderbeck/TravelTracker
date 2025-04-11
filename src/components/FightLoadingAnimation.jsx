@@ -21,17 +21,6 @@ const AnimatedPlane = styled(SendIcon)`
   font-size: 3rem;
   filter: drop-shadow(0 0 8px ${props => props.isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(25, 118, 210, 0.5)'});
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    width: 50px;
-    height: 2px;
-    background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(25, 118, 210, 0.3)'};
-    animation: trail 2s ease-in-out infinite;
-  }
-
   @keyframes fly {
     0% {
       left: -50px;
@@ -46,17 +35,46 @@ const AnimatedPlane = styled(SendIcon)`
       transform: translateY(-50%) rotate(0deg);
     }
   }
+`;
+
+const Trail = styled(Box)`
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    ${props => props.isDark ? 'rgba(255, 255, 255, 0)' : 'rgba(25, 118, 210, 0)'} 0%,
+    ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(25, 118, 210, 0.3)'} 50%,
+    ${props => props.isDark ? 'rgba(255, 255, 255, 0)' : 'rgba(25, 118, 210, 0)'} 100%
+  );
+  transform: translateY(-50%);
+  animation: trail 2s ease-in-out infinite;
 
   @keyframes trail {
-    0% { opacity: 0; width: 0; }
-    50% { opacity: 1; width: 50px; }
-    100% { opacity: 0; width: 0; }
+    0% {
+      opacity: 0;
+      transform: translateY(-50%) scaleX(0);
+    }
+    25% {
+      opacity: 1;
+      transform: translateY(-50%) scaleX(1);
+    }
+    75% {
+      opacity: 1;
+      transform: translateY(-50%) scaleX(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-50%) scaleX(0);
+    }
   }
 `;
 
 const FlightLoadingAnimation = ({ isDark }) => {
   return (
     <FlightPath>
+      <Trail isDark={isDark} />
       <AnimatedPlane isDark={isDark} />
     </FlightPath>
   );
