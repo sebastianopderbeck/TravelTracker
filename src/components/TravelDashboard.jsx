@@ -5,6 +5,7 @@ import FlightIcon from '@mui/icons-material/Flight';
 import SpeedIcon from '@mui/icons-material/Speed';
 import PublicIcon from '@mui/icons-material/Public';
 import ExploreIcon from '@mui/icons-material/Explore';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 const AnimatedNumber = ({ value, duration = 2000, unit = '' }) => {
   const [displayValue, setDisplayValue] = useState(0);
@@ -122,7 +123,8 @@ const TravelDashboard = () => {
   const totalDistance = stats?.totalDistance || 0;
   const averageDistance = stats?.averageDistance || 0;
   const totalFlights = stats?.totalFlights || 0;
-  const uniqueCountries = stats?.uniqueCountriesCount || 0;
+  const uniqueCities = stats?.uniqueCitiesCount || 0;
+  const totalFlightHours = stats?.totalFlightHours || 0;
 
   return (
     <Box>
@@ -168,9 +170,9 @@ const TravelDashboard = () => {
           <PublicIcon color="primary" sx={{ mr: 2 }} />
           <Box>
             <Typography variant="subtitle1" color="text.secondary">
-              Países Visitados
+              Ciudades Visitadas
             </Typography>
-            <AnimatedNumber value={uniqueCountries} />
+            <AnimatedNumber value={uniqueCities} />
           </Box>
         </Box>
       </Box>
@@ -183,6 +185,18 @@ const TravelDashboard = () => {
               Distancia Total Recorrida
             </Typography>
             <AnimatedNumber value={totalDistance} unit="km" />
+          </Box>
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <AccessTimeIcon color="primary" sx={{ mr: 2 }} />
+          <Box>
+            <Typography variant="subtitle1" color="text.secondary">
+              Horas de Vuelo
+            </Typography>
+            <AnimatedNumber value={totalFlightHours} unit="h" />
           </Box>
         </Box>
       </Box>

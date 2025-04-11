@@ -10,23 +10,25 @@ export const getTravelStats = async (req, res) => {
           _id: null,
           totalDistance: { $sum: '$distance' },
           totalFlights: { $sum: 1 },
+          totalFlightHours: { $sum: '$estimatedFlightTime' },
           averageDistance: { $avg: '$distance' },
-          originCountries: { $addToSet: '$origin.country' },
-          destinationCountries: { $addToSet: '$destination.country' }
+          originCities: { $addToSet: '$origin.iata' },
+          destinationCities: { $addToSet: '$destination.iata' }
         }
       },
       {
         $project: {
           totalDistance: 1,
           totalFlights: 1,
+          totalFlightHours: { $round: ['$totalFlightHours', 1] },
           averageDistance: { $round: ['$averageDistance', 2] },
-          uniqueCountriesCount: {
+          uniqueCitiesCount: {
             $size: {
-              $setUnion: ['$originCountries', '$destinationCountries']
+              $setUnion: ['$originCities', '$destinationCities']
             }
           },
-          allCountries: {
-            $concatArrays: ['$originCountries', '$destinationCountries']
+          allCities: {
+            $concatArrays: ['$originCities', '$destinationCities']
           }
         }
       },
@@ -34,20 +36,21 @@ export const getTravelStats = async (req, res) => {
         $project: {
           totalDistance: 1,
           totalFlights: 1,
+          totalFlightHours: 1,
           averageDistance: 1,
-          uniqueCountriesCount: 1,
-          countriesVisits: {
+          uniqueCitiesCount: 1,
+          citiesVisits: {
             $map: {
-              input: { $setUnion: ['$allCountries'] },
-              as: 'country',
+              input: { $setUnion: ['$allCities'] },
+              as: 'city',
               in: {
-                country: '$$country',
+                city: '$$city',
                 quantity: {
                   $size: {
                     $filter: {
-                      input: '$allCountries',
+                      input: '$allCities',
                       as: 'visit',
-                      cond: { $eq: ['$$visit', '$$country'] }
+                      cond: { $eq: ['$$visit', '$$city'] }
                     }
                   }
                 }
@@ -61,9 +64,10 @@ export const getTravelStats = async (req, res) => {
     res.json(stats[0] || { 
       totalDistance: 0, 
       totalFlights: 0,
+      totalFlightHours: 0,
       averageDistance: 0,
-      uniqueCountriesCount: 0,
-      countriesVisits: []
+      uniqueCitiesCount: 0,
+      citiesVisits: []
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
