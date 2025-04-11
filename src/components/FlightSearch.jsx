@@ -17,23 +17,23 @@ import {
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import FlightInfo from './FlightInfo';
 
 const FlightSearch = () => {
-  const [formData, setFormData] = useState({
+  const [searchData, setSearchData] = useState({
     origin: '',
     destination: '',
   });
+  
   const [searchInitiated, setSearchInitiated] = useState(false);
 
   const { data: flightInfo, isLoading: isLoadingFlight, error: flightError } = 
-    useGetFlightInfoQuery(formData, { skip: !searchInitiated });
-  const [addTravel, { isLoading: isSaving }] = useAddTravelMutation();
+    useGetFlightInfoQuery(searchData, { skip: !searchInitiated });
+  const [{ isLoading: isSaving }] = useAddTravelMutation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setSearchData(prev => ({
       ...prev,
       [name]: value.toUpperCase()
     }));
@@ -45,12 +45,9 @@ const FlightSearch = () => {
     setSearchInitiated(true);
   };
 
-  const handleSaveTravel = async () => {
-    if (flightInfo) {
-      await addTravel(flightInfo);
-      setFormData({ origin: '', destination: '' });
-      setSearchInitiated(false);
-    }
+  const handleSave = () => {
+    setSearchData({ origin: '', destination: '' });
+    setSearchInitiated(false);
   };
 
   const loading = isLoadingFlight || isSaving;
@@ -88,7 +85,7 @@ const FlightSearch = () => {
               fullWidth
               label="Origen (Código IATA)"
               name="origin"
-              value={formData.origin}
+              value={searchData.origin}
               onChange={handleChange}
               required
               InputProps={{
@@ -102,7 +99,7 @@ const FlightSearch = () => {
               fullWidth
               label="Destino (Código IATA)"
               name="destination"
-              value={formData.destination}
+              value={searchData.destination}
               onChange={handleChange}
               required
               InputProps={{
@@ -145,76 +142,11 @@ const FlightSearch = () => {
           </Fade>
         )}
 
-        {flightInfo && !loading && (
-          <Fade in={true}>
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                p: 3, 
-                mt: 3, 
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: 2,
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Información del Vuelo
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Origen:</strong> {flightInfo.origin.name} ({flightInfo.origin.iata})
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {flightInfo.origin.city}, {flightInfo.origin.country}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Destino:</strong> {flightInfo.destination.name} ({flightInfo.destination.iata})
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {flightInfo.destination.city}, {flightInfo.destination.country}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Distancia:</strong> {flightInfo.distance.toLocaleString()} km
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Tiempo estimado:</strong> {flightInfo.estimatedFlightTime} horas
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Typography variant="h6" gutterBottom>
-                {`${flightInfo.origin.country} (${flightInfo.origin.iata}) `}
-                <ArrowForwardIcon sx={{ verticalAlign: 'middle', mx: 1 }} />
-                {` ${flightInfo.destination.country} (${flightInfo.destination.iata})`}
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleSaveTravel}
-                disabled={isSaving}
-                sx={{
-                  mt: 2,
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 8px rgba(0,0,0,0.15)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                {isSaving ? <CircularProgress size={24} /> : 'Guardar Viaje'}
-              </Button>
-            </Paper>
-          </Fade>
+        {flightInfo && !loading && searchInitiated && (
+          <FlightInfo 
+            flightInfo={flightInfo} 
+            onSave={handleSave}
+          />
         )}
       </Paper>
     </Box>

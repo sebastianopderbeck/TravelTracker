@@ -12,7 +12,11 @@ const travelSchema = new mongoose.Schema({
     country: String
   },
   distance: Number,
-  estimatedFlightTime: Number
+  estimatedFlightTime: Number,
+  date: {
+    type: Date,
+    required: true
+  }
 }, {
   timestamps: true
 });

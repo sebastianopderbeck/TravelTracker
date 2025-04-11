@@ -73,7 +73,10 @@ const TravelHistory = () => {
                 secondary={
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Fecha: {new Date(travel.createdAt).toLocaleDateString()}
+                      Fecha del vuelo: {new Date(travel.date).toLocaleDateString()}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Registrado: {new Date(travel.createdAt).toLocaleDateString()}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Distancia: {travel.distance.toLocaleString()} km
@@ -81,6 +84,9 @@ const TravelHistory = () => {
                   </Box>
                 }
               />
+              <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(travel._id)}>
+                <DeleteIcon />
+              </IconButton>
             </ListItem>
           ))
         ) : (

@@ -17,11 +17,17 @@ export const travelApi = createApi({
       query: ({ origin, destination }) => `flight-info?origin=${origin}&destination=${destination}`,
     }),
     addTravel: builder.mutation({
-      query: (travel) => ({
-        url: 'travels',
-        method: 'POST',
-        body: travel,
-      }),
+      query: (travel) => {
+        const { flightDate, ...rest } = travel;
+        return {
+          url: 'travels',
+          method: 'POST',
+          body: {
+            ...rest,
+            date: flightDate.toISOString(),
+          },
+        };
+      },
       invalidatesTags: ['Travel'],
     }),
     deleteTravel: builder.mutation({
