@@ -4,6 +4,18 @@ import FlightIcon from '@mui/icons-material/Flight';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useDeleteTravelMutation, useGetTravelsQuery } from '../services/travelApi';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+const formatDate = (date) => {
+  if (!date) return 'No especificada';
+  try {
+    return format(new Date(date), 'dd/MM/yyyy', { locale: es });
+  } catch (error) {
+    console.error('Error formateando fecha:', error);
+    return 'Fecha inválida';
+  }
+};
 
 const TravelHistory = () => {
   const { data: travels, isLoading } = useGetTravelsQuery();
@@ -26,7 +38,7 @@ const TravelHistory = () => {
   }
 
   return (
-    <Paper elevation={3} sx={{ p: 2, background: 'rgba(255, 255, 255, 0.9)' }}>
+    <Box>
       <Typography 
         variant="h6" 
         gutterBottom 
@@ -73,13 +85,18 @@ const TravelHistory = () => {
                 secondary={
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Fecha del vuelo: {new Date(travel.date).toLocaleDateString()}
+                      Fecha de ida: {formatDate(travel.departureDate)}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Registrado: {new Date(travel.createdAt).toLocaleDateString()}
-                    </Typography>
+                    {travel.isRoundTrip && travel.returnDate && (
+                      <Typography variant="body2" color="text.secondary">
+                        Fecha de vuelta: {formatDate(travel.returnDate)}
+                      </Typography>
+                    )}
                     <Typography variant="body2" color="text.secondary">
                       Distancia: {travel.distance.toLocaleString()} km
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Duración: {travel.estimatedFlightTime} horas
                     </Typography>
                   </Box>
                 }
@@ -95,7 +112,7 @@ const TravelHistory = () => {
           </ListItem>
         )}
       </List>
-    </Paper>
+    </Box>
   );
 };
 

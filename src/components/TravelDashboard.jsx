@@ -6,6 +6,15 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import PublicIcon from '@mui/icons-material/Public';
 import ExploreIcon from '@mui/icons-material/Explore';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import styled from '@emotion/styled';
+
+const ClockIcon = styled(AccessTimeIcon)`
+  animation: rotate 2s linear infinite;
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
 
 const AnimatedNumber = ({ value, duration = 2000, unit = '' }) => {
   const [displayValue, setDisplayValue] = useState(0);
@@ -42,7 +51,7 @@ const AnimatedNumber = ({ value, duration = 2000, unit = '' }) => {
   );
 };
 
-const StatCard = ({ title, value, icon, color, isAnimated = false }) => (
+const StatCard = ({ title, value, icon, color, isAnimated = false, isClock = false }) => (
   <Paper
     elevation={2}
     sx={{
@@ -52,7 +61,7 @@ const StatCard = ({ title, value, icon, color, isAnimated = false }) => (
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      backgroundColor: 'rgba(255, 255, 255, 0.7)',
       borderRadius: 2,
       transition: 'all 0.3s ease',
       position: 'relative',
@@ -86,7 +95,7 @@ const StatCard = ({ title, value, icon, color, isAnimated = false }) => (
         },
       }}
     >
-      {icon}
+      {isClock ? <ClockIcon /> : icon}
     </Box>
     {isAnimated ? (
       <AnimatedNumber value={value} />
@@ -191,7 +200,7 @@ const TravelDashboard = () => {
 
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <AccessTimeIcon color="primary" sx={{ mr: 2 }} />
+          <ClockIcon color="primary" sx={{ mr: 2 }} />
           <Box>
             <Typography variant="subtitle1" color="text.secondary">
               Horas de Vuelo

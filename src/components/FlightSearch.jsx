@@ -29,7 +29,7 @@ const FlightSearch = () => {
 
   const { data: flightInfo, isLoading: isLoadingFlight, error: flightError } = 
     useGetFlightInfoQuery(searchData, { skip: !searchInitiated });
-  const [{ isLoading: isSaving }] = useAddTravelMutation();
+  const [addTravel, { isLoading: isSaving }] = useAddTravelMutation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,8 +45,12 @@ const FlightSearch = () => {
     setSearchInitiated(true);
   };
 
-  const handleSave = () => {
-    setSearchData({ origin: '', destination: '' });
+  const handleSave = async () => {
+    // Resetear el formulario
+    setSearchData({
+      origin: '',
+      destination: '',
+    });
     setSearchInitiated(false);
   };
 
@@ -54,7 +58,6 @@ const FlightSearch = () => {
 
   return (
     <Box component="form" onSubmit={handleSubmit}>
-      <Paper elevation={3} sx={{ p: 2, background: 'rgba(255, 255, 255, 0.9)' }}>
         <Typography 
           variant="h6" 
           gutterBottom 
@@ -148,7 +151,6 @@ const FlightSearch = () => {
             onSave={handleSave}
           />
         )}
-      </Paper>
     </Box>
   );
 };

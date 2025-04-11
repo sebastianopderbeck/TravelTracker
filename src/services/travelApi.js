@@ -18,13 +18,14 @@ export const travelApi = createApi({
     }),
     addTravel: builder.mutation({
       query: (travel) => {
-        const { flightDate, ...rest } = travel;
+        const { departureDate, returnDate, ...rest } = travel;
         return {
           url: 'travels',
           method: 'POST',
           body: {
             ...rest,
-            date: flightDate.toISOString(),
+            departureDate: departureDate.toISOString(),
+            returnDate: returnDate ? returnDate.toISOString() : null,
           },
         };
       },

@@ -1,6 +1,28 @@
 import axios from 'axios';
 import Travel from '../models/Travel.js';
 
+// Cache para almacenar las respuestas de la API
+const flightCache = new Map();
+const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 días en milisegundos
+
+// Función para limpiar el caché periódicamente
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, { timestamp }] of flightCache.entries()) {
+    if (now - timestamp > CACHE_DURATION) {
+      flightCache.delete(key);
+    }
+  }
+}, 24 * 60 * 60 * 1000); // Limpiar cada 24 horas
+
+// Función para invalidar el caché de una ruta específica
+const invalidateCache = (origin, destination) => {
+  const cacheKey = `${origin}-${destination}`;
+  const reverseCacheKey = `${destination}-${origin}`;
+  flightCache.delete(cacheKey);
+  flightCache.delete(reverseCacheKey);
+};
+
 // Get travel statistics
 export const getTravelStats = async (req, res) => {
   try {
@@ -87,9 +109,32 @@ export const getTravels = async (req, res) => {
 // Create a travel
 export const createTravel = async (req, res) => {
   try {
-    const travel = new Travel(req.body);
-    await travel.save();
-    res.status(201).json(travel);
+    const { isRoundTrip, ...travelData } = req.body;
+    
+    // Crear el viaje de ida
+    const outboundTravel = new Travel({
+      ...travelData,
+      isRoundTrip: false
+    });
+    await outboundTravel.save();
+
+    // Si es ida y vuelta, crear el viaje de vuelta
+    if (isRoundTrip) {
+      const returnTravel = new Travel({
+        ...travelData,
+        origin: travelData.destination,
+        destination: travelData.origin,
+        departureDate: travelData.returnDate,
+        isRoundTrip: false
+      });
+      await returnTravel.save();
+      res.status(201).json([outboundTravel, returnTravel]);
+    } else {
+      res.status(201).json(outboundTravel);
+    }
+
+    // Invalidar el caché para esta ruta
+    invalidateCache(travelData.origin.iata, travelData.destination.iata);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -124,6 +169,15 @@ export const getFlightInfo = async (req, res) => {
       return res.status(400).json({ error: 'Se requieren los códigos IATA de origen y destino' });
     }
 
+    // Crear una clave única para el caché
+    const cacheKey = `${origin}-${destination}`;
+    const cachedData = flightCache.get(cacheKey);
+
+    // Si hay datos en caché y no han expirado, devolverlos
+    if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
+      return res.json(cachedData.data);
+    }
+
     // Obtener información del vuelo desde Aviationstack
     const response = await axios.get('http://api.aviationstack.com/v1/flights', {
       params: {
@@ -152,7 +206,7 @@ export const getFlightInfo = async (req, res) => {
     // Estimar la distancia basada en la duración (asumiendo una velocidad promedio de 800 km/h)
     const distance = Math.round(durationHours * 800);
 
-    res.json({
+    const flightData = {
       origin: {
         iata: flight.departure.iata,
         name: flight.departure.airport,
@@ -175,7 +229,15 @@ export const getFlightInfo = async (req, res) => {
       },
       distance,
       estimatedFlightTime: durationHours.toFixed(1)
+    };
+
+    // Almacenar en caché
+    flightCache.set(cacheKey, {
+      data: flightData,
+      timestamp: Date.now()
     });
+
+    res.json(flightData);
   } catch (error) {
     console.error('Error al obtener información del vuelo:', error);
     res.status(500).json({ error: 'Error al obtener información del vuelo' });
