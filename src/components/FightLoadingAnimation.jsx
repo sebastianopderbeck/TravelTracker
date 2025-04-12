@@ -40,7 +40,7 @@ const AnimatedPlane = styled(SendIcon)`
 const Trail = styled(Box)`
   position: absolute;
   top: 50%;
-  left: 0;
+  left: 50vw;
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, 
@@ -48,25 +48,21 @@ const Trail = styled(Box)`
     ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(25, 118, 210, 0.3)'} 50%,
     ${props => props.isDark ? 'rgba(255, 255, 255, 0)' : 'rgba(25, 118, 210, 0)'} 100%
   );
-  transform: translateY(-50%);
-  animation: trail 2s ease-in-out infinite;
-
+  transform: translateY(0) rotate(0deg);
+  animation: trail 4s ease-in-out infinite;
+  z-index: 1;
   @keyframes trail {
     0% {
-      opacity: 0;
-      transform: translateY(-50%) scaleX(0);
+      left: 0px;
+      transform: translateY(-50%) rotate(0deg);
     }
-    25% {
-      opacity: 1;
-      transform: translateY(-50%) scaleX(1);
-    }
-    75% {
-      opacity: 1;
-      transform: translateY(-50%) scaleX(1);
+    50% {
+      left: 50vw;
+      transform: translateY(-50%) rotate(0deg);
     }
     100% {
-      opacity: 0;
-      transform: translateY(-50%) scaleX(0);
+      left: 100vw;
+      transform: translateY(-50%) rotate(0deg);
     }
   }
 `;

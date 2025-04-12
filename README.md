@@ -1,29 +1,24 @@
-# Travel Tracker
+# TravelTracker
 
-Una aplicación web moderna para rastrear y gestionar tus viajes aéreos. La aplicación te permite buscar información sobre vuelos, calcular distancias y tiempos estimados de vuelo, y mantener un historial de tus viajes.
+TravelTracker es una aplicación web que te permite rastrear y monitorear vuelos en tiempo real. La aplicación utiliza datos de Aviationstack para proporcionar información precisa y actualizada sobre vuelos alrededor del mundo.
 
-## Características
+## Requisitos Previos
 
-- 🛫 Búsqueda de información de vuelos por códigos IATA
-- 📊 Cálculo de distancias y tiempos estimados de vuelo
-- 💾 Guardado de historial de viajes
-- 🗑️ Gestión de viajes (eliminación individual o masiva)
+Para que la aplicación funcione correctamente, necesitarás:
 
-## Tecnologías Utilizadas
+1. Una cuenta en [Aviationstack](https://aviationstack.com/)
+   - Regístrate para obtener una API key gratuita
+   - El plan gratuito incluye 100 solicitudes por mes
 
-- React
-- Material-UI
-- Redux Toolkit Query
-- MongoDB
-- Node.js
-- Express
+2. Node.js instalado en tu sistema
+   - Versión recomendada: 16.x o superior
 
-## Instalación
+## Configuración
 
-1. Clona el repositorio:
+1. Clona este repositorio:
 ```bash
-git clone https://github.com/tu-usuario/travel-tracker.git
-cd travel-tracker
+git clone [URL_DEL_REPOSITORIO]
+cd TravelTracker
 ```
 
 2. Instala las dependencias:
@@ -31,20 +26,39 @@ cd travel-tracker
 npm install
 ```
 
-3. Configura las variables de entorno:
-Crea un archivo `.env` en la raíz del proyecto con:
-```
-MONGODB_URI=tu_uri_de_mongodb
+3. Crea un archivo `.env` en la raíz del proyecto y añade tu API key de Aviationstack:
+
+```env
+   # API Key de Aviationstack (obligatoria)
+   AVIATIONSTACK_API_KEY=1234567890abcdef1234567890abcdef
+
+   # Configuración opcional del entorno
+      MONGODB_URI
 ```
 
-4. Inicia el servidor de desarrollo:
+4. Inicia la aplicación en modo desarrollo:
 ```bash
-npm run dev
+npm start
 ```
+
+## Características
+
+- Rastreo de vuelos en tiempo real
+- Información detallada de vuelos
+- Interfaz de usuario moderna y responsiva
+- Modo claro/oscuro automático
+- Animaciones suaves y atractivas
+
+## Tecnologías Utilizadas
+
+- React
+- Material-UI
+- Emotion (para estilos)
+- Aviationstack API
 
 ## Contribución
 
-Las contribuciones son bienvenidas. Por favor, abre un issue para discutir los cambios propuestos o crea un pull request.
+Las contribuciones son bienvenidas. Por favor, abre un issue para discutir los cambios que te gustaría hacer.
 
 ## Licencia
 

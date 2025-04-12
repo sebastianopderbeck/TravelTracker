@@ -17,19 +17,29 @@ const AnimatedPlane = styled(SendIcon)`
   top: 50%;
   transform: translateY(-50%) rotate(0deg);
   animation: fly 2s ease-in-out infinite;
-  color: ${props => props.isDark ? '#FFFFFF' : '#1976D2'};
   font-size: 3rem;
-  filter: drop-shadow(0 0 8px ${props => props.isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(25, 118, 210, 0.5)'});
 
-  &::before {
+  @media (prefers-color-scheme: dark) {
+    color: #FFFFFF;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+  }
+  @media (prefers-color-scheme: light) {
+    color: #1976D2;
+    filter: drop-shadow(0 0 8px rgba(25, 118, 210, 0.5));
+  }
+
+  &::after {
     content: '';
     position: absolute;
     top: 50%;
     right: 100%;
-    width: 50px;
+    width: 200px;
     height: 2px;
-    background: ${props => props.isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(25, 118, 210, 0.3)'};
-    animation: trail 2s ease-in-out infinite;
+    background: ${props => props.isDark 
+      ? 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0) 100%)'
+      : 'linear-gradient(90deg, rgba(25,118,210,0) 0%, rgba(25,118,210,0.8) 20%, rgba(25,118,210,0) 100%)'
+    };
+    transform: translateY(-50%);
   }
 
   @keyframes fly {
@@ -46,18 +56,12 @@ const AnimatedPlane = styled(SendIcon)`
       transform: translateY(-50%) rotate(0deg);
     }
   }
-
-  @keyframes trail {
-    0% { opacity: 0; width: 0; }
-    50% { opacity: 1; width: 50px; }
-    100% { opacity: 0; width: 0; }
-  }
 `;
 
-const FlightLoadingAnimation = ({ isDark }) => {
+const FlightLoadingAnimation = () => {
   return (
     <FlightPath>
-      <AnimatedPlane isDark={isDark} />
+      <AnimatedPlane />
     </FlightPath>
   );
 };

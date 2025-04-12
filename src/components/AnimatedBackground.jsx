@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, keyframes, IconButton } from '@mui/material';
 import FlightIcon from '@mui/icons-material/Flight';
 import PublicIcon from '@mui/icons-material/Public';
@@ -67,74 +67,18 @@ const trailAnimation = keyframes`
   }
 `;
 
-const Country = ({ delay, top, left, size, color }) => (
-  <Box
-    sx={{
-      position: 'absolute',
-      top: `${top}%`,
-      left: `${left}%`,
-      animation: `${float} 8s ease-in-out infinite`,
-      animationDelay: `${delay}s`,
-      zIndex: 1,
-    }}
-  >
-    <PublicIcon
-      sx={{
-        fontSize: size,
-        color: color,
-        filter: 'drop-shadow(0 0 8px rgba(0,0,0,0.1))',
-      }}
-    />
-  </Box>
-);
-
-const Plane = ({ delay, top, size, color }) => (
-  <Box
-    sx={{
-      position: 'absolute',
-      top: `${top}%`,
-      left: 0,
-      animation: `${planeAnimation} 20s linear infinite`,
-      animationDelay: `${delay}s`,
-      zIndex: 1,
-    }}
-  >
-    <Box
-      sx={{
-        position: 'relative',
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          top: '50%',
-          left: '-200px',
-          height: '2px',
-          background: `linear-gradient(to right, ${color}00, ${color}80)`,
-          animation: `${trailAnimation} 15s linear infinite`,
-          animationDelay: `${delay}s`,
-          transform: 'translateY(-50%)',
-        },
-      }}
-    >
-      <FlightIcon
-        sx={{
-          fontSize: size,
-          color: color,
-          transform: 'rotate(90deg)',
-          opacity: 0.7,
-        }}
-      />
-    </Box>
-  </Box>
-);
-
 const BackgroundContainer = styled(Box)`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
   overflow: hidden;
+  background: ${props => props.isDark 
+    ? 'linear-gradient(45deg, #0a1929 0%, #1a237e 100%)'
+    : '#F5F5F5'
+  };
 `;
 
 const ThemeToggle = styled(IconButton)`
@@ -153,8 +97,95 @@ const ThemeToggle = styled(IconButton)`
   }
 `;
 
-const AnimatedBackground = () => {
-  const [isDark, setIsDark] = useState(true);
+const Country = styled(Box)`
+  position: absolute;
+  animation: ${float} 8s ease-in-out infinite;
+  animation-delay: ${props => props.delay}s;
+  z-index: 1;
+  opacity: ${props => props.isLoading ? 0 : 1};
+  transition: opacity 0.5s ease-in-out;
+  top: ${props => props.top};
+  left: ${props => props.left};
+
+  & .MuiSvgIcon-root {
+    font-size: ${props => props.size};
+    color: ${props => props.isDark ? props.darkColor : props.lightColor};
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.1));
+  }
+`;
+
+const Plane = styled(Box)`
+  position: absolute;
+  animation: ${planeAnimation} 20s linear infinite;
+  animation-delay: ${props => props.delay}s;
+  z-index: 1;
+  opacity: ${props => props.isLoading ? 0 : 1};
+  transition: opacity 0.5s ease-in-out;
+  top: ${props => props.top}%;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -400px;
+    width: 400px;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      ${props => props.color}00,
+      ${props => props.color}80,
+      ${props => props.color}80,
+      ${props => props.color}00
+    );
+    transform: translateY(-50%);
+    animation: ${trailAnimation} 15s linear infinite;
+    animation-delay: ${props => props.delay}s;
+  }
+
+  & .MuiSvgIcon-root {
+    font-size: ${props => props.size};
+    color: ${props => props.color};
+    transform: rotate(90deg);
+    filter: drop-shadow(0 0 4px ${props => props.color});
+  }
+`;
+
+const PulsatingCircle = styled(Box)`
+  position: absolute;
+  border-radius: 50%;
+  animation: ${pulse} 4s ease-in-out infinite;
+  animation-delay: ${props => props.delay}s;
+  z-index: 0;
+  opacity: ${props => props.isLoading ? 0 : 1};
+  transition: opacity 0.5s ease-in-out;
+  top: ${props => props.top};
+  left: ${props => props.left};
+  right: ${props => props.right};
+  bottom: ${props => props.bottom};
+  background: ${props => props.isDark 
+    ? 'rgba(25, 118, 210, 0.1)'
+    : 'rgba(255, 255, 255, 0.2)'
+  };
+`;
+
+const AnimatedBackground = ({ isLoading = true }) => {
+  const [isDark, setIsDark] = useState(() => {
+    // Detectar el tema inicial del sistema
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return true; // Valor por defecto
+  });
+
+  useEffect(() => {
+    // Escuchar cambios en el tema del sistema
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      setIsDark(e.matches);
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -163,90 +194,44 @@ const AnimatedBackground = () => {
   return (
     <>
       <ThemeToggle onClick={toggleTheme} isDark={isDark}>
-        {isDark ? <DarkModeIcon />: <WbSunnyIcon /> }
+        {isDark ? <WbSunnyIcon /> : <DarkModeIcon />}
       </ThemeToggle>
-      <BackgroundContainer>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: isDark 
-              ? '#FFFFFF'
-              : 'linear-gradient(45deg, #0a1929 0%, #1a237e 100%)',
-            opacity: isDark ? 1 : 0.2,
-            animation: 'gradient 15s ease infinite',
-            '@keyframes gradient': {
-              '0%': {
-                backgroundPosition: '0% 50%',
-              },
-              '50%': {
-                backgroundPosition: '100% 50%',
-              },
-              '100%': {
-                backgroundPosition: '0% 50%',
-              },
-            },
-          }}
-        />
+      <BackgroundContainer isDark={isDark}>
         {/* Países flotantes */}
-        <Country delay={0} top={7} left={67} size="4rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(211, 47, 47, 0.9)" } />
-        <Country delay={2} top={60} left={80} size="5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(156, 39, 176, 0.9)"} />
-        <Country delay={4} top={30} left={40} size="3.5rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
-        <Country delay={1} top={70} left={20} size="4.5rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
-        <Country delay={3} top={40} left={70} size="3rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)" } />
-        <Country delay={1} top={80} left={70} size="4rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(211, 47, 47, 0.9)"} />
-        <Country delay={6} top={90} left={90} size="3rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
+        <Country delay={0} top="7%" left="67%" size="4rem" isDark={isDark} darkColor="rgba(25, 118, 210, 0.9)" lightColor="rgba(211, 47, 47, 0.9)" isLoading={isLoading}>
+          <PublicIcon />
+        </Country>
+        <Country delay={2} top="60%" left="80%" size="5rem" isDark={isDark} darkColor="rgba(46, 125, 50, 0.9)" lightColor="rgba(156, 39, 176, 0.9)" isLoading={isLoading}>
+          <PublicIcon />
+        </Country>
+        <Country delay={4} top="30%" left="40%" size="3.5rem" isDark={isDark} darkColor="rgba(156, 39, 176, 0.9)" lightColor="rgba(255, 152, 0, 0.9)" isLoading={isLoading}>
+          <PublicIcon />
+        </Country>
+        <Country delay={1} top="70%" left="20%" size="4.5rem" isDark={isDark} darkColor="rgba(211, 47, 47, 0.9)" lightColor="rgba(25, 118, 210, 0.9)" isLoading={isLoading}>
+          <PublicIcon />
+        </Country>
+        <Country delay={3} top="40%" left="70%" size="3rem" isDark={isDark} darkColor="rgba(255, 152, 0, 0.9)" lightColor="rgba(46, 125, 50, 0.9)" isLoading={isLoading}>
+          <PublicIcon />
+        </Country>
 
         {/* Elementos pulsantes */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '30%',
-            right: '30%',
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            background: isDark ? 'rgba(25, 118, 210, 0.02)' : 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(5px)',
-            animation: `${pulse} 4s ease-in-out infinite`,
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '40%',
-            left: '40%',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            background: isDark ? 'rgba(25, 118, 210, 0.01)' : 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(5px)',
-            animation: `${pulse} 5s ease-in-out infinite`,
-            animationDelay: '1.5s',
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: '90%',
-            left: '20%',
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            background: isDark ? 'rgba(25, 118, 210, 0.01)' : 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(5px)',
-            animation: `${pulse} 5s ease-in-out infinite`,
-            animationDelay: '1.5s',
-          }}
-        />
+        <PulsatingCircle delay={0} top="30%" right="30%" width="80px" height="80px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={1.5} bottom="40%" left="40%" width="100px" height="100px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={2} top="20%" left="20%" width="50px" height="50px" isDark={isDark} isLoading={isLoading} />
+
         {/* Aviones sutiles */}
-        <Plane delay={0} top={15} size="2rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)"} />
-        <Plane delay={3} top={75} size="2.5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(211, 47, 47, 0.9)"} />
-        <Plane delay={15} top={45} size="3rem" color={isDark ?  "rgba(25, 118, 210, 0.9)" : "rgba(255, 152, 0, 0.9)"} />
-        <Plane delay={1} top={90} size="2rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} />
+        <Plane delay={0} top={15} size="2rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={3} top={75} size="2.5rem" color={isDark ? "rgba(46, 125, 50, 0.9)" : "rgba(211, 47, 47, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={15} top={45} size="3rem" color={isDark ? "rgba(25, 118, 210, 0.9)" : "rgba(255, 152, 0, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={1} top={90} size="2rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
       </BackgroundContainer>
     </>
   );
