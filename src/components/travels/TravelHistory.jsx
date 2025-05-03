@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box, Typography, Paper, CircularProgress, List, ListItem, ListItemText, ListItemIcon, Divider, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, CircularProgress, List, ListItem, ListItemText, ListItemIcon, IconButton } from '@mui/material';
 import FlightIcon from '@mui/icons-material/Flight';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useDeleteTravelMutation, useGetTravelsQuery } from '../services/travelApi';
+import { useDeleteTravelMutation, useGetTravelsQuery } from '../../services/travelApi';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 

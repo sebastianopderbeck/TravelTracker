@@ -41,11 +41,23 @@ const planeAnimation = keyframes`
   10% {
     opacity: 1;
   }
+  20% {
+    transform: translateX(20vw) translateY(-20px) rotate(5deg);
+  }
+  40% {
+    transform: translateX(40vw) translateY(10px) rotate(-3deg);
+  }
+  60% {
+    transform: translateX(60vw) translateY(-15px) rotate(2deg);
+  }
+  80% {
+    transform: translateX(80vw) translateY(5px) rotate(-4deg);
+  }
   90% {
     opacity: 1;
   }
   100% {
-    transform: translateX(calc(100vw + 100px)) translateY(100px) rotate(10deg);
+    transform: translateX(calc(100vw + 100px)) translateY(0) rotate(0deg);
     opacity: 0;
   }
 `;
@@ -58,11 +70,23 @@ const trailAnimation = keyframes`
   10% {
     opacity: 0.3;
   }
+  20% {
+    width: 50px;
+  }
+  40% {
+    width: 100px;
+  }
+  60% {
+    width: 150px;
+  }
+  80% {
+    width: 200px;
+  }
   90% {
     opacity: 0.3;
   }
   100% {
-    width: 200px;
+    width: 0;
     opacity: 0;
   }
 `;
@@ -116,7 +140,7 @@ const Country = styled(Box)`
 
 const Plane = styled(Box)`
   position: absolute;
-  animation: ${planeAnimation} 20s linear infinite;
+  animation: ${planeAnimation} 30s linear infinite;
   animation-delay: ${props => props.delay}s;
   z-index: 1;
   opacity: ${props => props.isLoading ? 0 : 1};
@@ -138,7 +162,7 @@ const Plane = styled(Box)`
       ${props => props.color}00
     );
     transform: translateY(-50%);
-    animation: ${trailAnimation} 15s linear infinite;
+    animation: ${trailAnimation} 30s linear infinite;
     animation-delay: ${props => props.delay}s;
   }
 
@@ -164,7 +188,7 @@ const PulsatingCircle = styled(Box)`
   bottom: ${props => props.bottom};
   background: ${props => props.isDark 
     ? 'rgba(25, 118, 210, 0.1)'
-    : 'rgba(255, 255, 255, 0.2)'
+    : 'rgba(100, 181, 246, 0.25)'
   };
 `;
 
@@ -194,7 +218,7 @@ const AnimatedBackground = ({ isLoading = true }) => {
   return (
     <>
       <ThemeToggle onClick={toggleTheme} isDark={isDark}>
-        {isDark ? <WbSunnyIcon /> : <DarkModeIcon />}
+        {isDark ? <WbSunnyIcon sx={{ color: 'white' }} /> : <DarkModeIcon sx={{ color: 'black' }} />}
       </ThemeToggle>
       <BackgroundContainer isDark={isDark}>
         {/* Países flotantes */}
@@ -219,6 +243,13 @@ const AnimatedBackground = ({ isLoading = true }) => {
         <PulsatingCircle delay={1.5} bottom="40%" left="40%" width="100px" height="100px" isDark={isDark} isLoading={isLoading} />
         <PulsatingCircle delay={2} top="20%" left="20%" width="50px" height="50px" isDark={isDark} isLoading={isLoading} />
 
+        {/* Nuevos círculos pulsantes */}
+        <PulsatingCircle delay={0.5} top="10%" left="50%" width="60px" height="60px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={1} top="80%" right="20%" width="70px" height="70px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={2.5} top="50%" left="10%" width="90px" height="90px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={3} top="70%" left="60%" width="40px" height="40px" isDark={isDark} isLoading={isLoading} />
+        <PulsatingCircle delay={3.5} top="40%" right="10%" width="55px" height="55px" isDark={isDark} isLoading={isLoading} />
+
         {/* Aviones sutiles */}
         <Plane delay={0} top={15} size="2rem" color={isDark ? "rgba(255, 152, 0, 0.9)" : "rgba(46, 125, 50, 0.9)"} isLoading={isLoading}>
           <FlightIcon />
@@ -230,6 +261,18 @@ const AnimatedBackground = ({ isLoading = true }) => {
           <FlightIcon />
         </Plane>
         <Plane delay={1} top={90} size="2rem" color={isDark ? "rgba(211, 47, 47, 0.9)" : "rgba(25, 118, 210, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={5} top={25} size="2.2rem" color={isDark ? "rgba(156, 39, 176, 0.9)" : "rgba(0, 150, 136, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={8} top={60} size="2.8rem" color={isDark ? "rgba(0, 150, 136, 0.9)" : "rgba(156, 39, 176, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={12} top={85} size="2.4rem" color={isDark ? "rgba(255, 87, 34, 0.9)" : "rgba(33, 150, 243, 0.9)"} isLoading={isLoading}>
+          <FlightIcon />
+        </Plane>
+        <Plane delay={18} top={35} size="2.6rem" color={isDark ? "rgba(33, 150, 243, 0.9)" : "rgba(255, 87, 34, 0.9)"} isLoading={isLoading}>
           <FlightIcon />
         </Plane>
       </BackgroundContainer>

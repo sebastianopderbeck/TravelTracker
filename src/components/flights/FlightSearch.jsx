@@ -8,12 +8,11 @@ import {
   CircularProgress,
   Alert,
   Fade,
-  Paper,
 } from '@mui/material';
 import {
   useGetFlightInfoQuery,
   useAddTravelMutation
-} from '../services/travelApi';
+} from '../../services/travelApi';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import SearchIcon from '@mui/icons-material/Search';

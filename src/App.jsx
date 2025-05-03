@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Box, Container, Typography, Paper, Grid, Fade } from '@mui/material';
-import FlightSearch from './components/FlightSearch';
-import TravelHistory from './components/TravelHistory';
-import TravelDashboard from './components/TravelDashboard';
-import AnimatedBackground from './components/AnimatedBackground';
-import FlightLoadingAnimation from './components/FlightLoadingAnimation';
+import FlightSearch from './components/flights/FlightSearch';
+import TravelHistory from './components/travels/TravelHistory';
+import TravelDashboard from './components/travels/TravelDashboard';
+import AnimatedBackground from './components/animations/AnimatedBackground';
+import FlightLoadingAnimation from './components/animations/FightLoadingAnimation';
 import { useGetTravelsQuery } from './services/travelApi';
 
 function App() {

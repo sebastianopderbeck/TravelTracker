@@ -23,7 +23,8 @@ app.use('/api', travelRoutes);
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    console.log('MONGODB_URI:', process.env.MONGODB_URI);
+    const conn = await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/travel-tracker", {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,

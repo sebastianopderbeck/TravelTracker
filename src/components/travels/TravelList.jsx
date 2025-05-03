@@ -4,14 +4,12 @@ import {
   Typography,
   List,
   ListItem,
-  ListItemText,
   IconButton,
   Button,
   CircularProgress,
   Alert,
   Fade,
   Paper,
-  Divider,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
@@ -20,7 +18,7 @@ import {
   useGetTravelsQuery,
   useDeleteTravelMutation,
   useDeleteAllTravelsMutation
-} from '../services/travelApi';
+} from '../../services/travelApi';
 
 const TravelList = () => {
   const { data: travels = [], isLoading, error } = useGetTravelsQuery();

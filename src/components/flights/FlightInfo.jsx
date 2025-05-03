@@ -16,7 +16,7 @@ import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale';
-import { useAddTravelMutation } from '../services/travelApi';
+import { useAddTravelMutation } from '../../services/travelApi';
 
 const FlightInfo = ({ flightInfo, onSave }) => {
   const [dateRange, setDateRange] = useState([null, null]);
