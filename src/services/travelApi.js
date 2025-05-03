@@ -3,11 +3,11 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const travelApi = createApi({
   reducerPath: 'travelApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001/api' }),
-  tagTypes: ['Travel'],
+  tagTypes: ['Travels'],
   endpoints: (builder) => ({
     getTravels: builder.query({
       query: () => 'travels',
-      providesTags: ['Travel'],
+      providesTags: ['Travels'],
     }),
     getTravelStats: builder.query({
       query: () => 'travels/stats',
@@ -17,19 +17,12 @@ export const travelApi = createApi({
       query: ({ origin, destination }) => `flight-info?origin=${origin}&destination=${destination}`,
     }),
     addTravel: builder.mutation({
-      query: (travel) => {
-        const { departureDate, returnDate, ...rest } = travel;
-        return {
-          url: 'travels',
-          method: 'POST',
-          body: {
-            ...rest,
-            departureDate: departureDate.toISOString(),
-            returnDate: returnDate ? returnDate.toISOString() : null,
-          },
-        };
-      },
-      invalidatesTags: ['Travel'],
+      query: (travel) => ({
+        url: 'travels',
+        method: 'POST',
+        body: travel,
+      }),
+      invalidatesTags: ['Travels'],
     }),
     deleteTravel: builder.mutation({
       query: (id) => ({

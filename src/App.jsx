@@ -3,14 +3,23 @@ import { Box, Container, Typography, Paper, Grid, Fade } from '@mui/material';
 import FlightSearch from './components/flights/FlightSearch';
 import TravelHistory from './components/travels/TravelHistory';
 import TravelDashboard from './components/travels/TravelDashboard';
+import TravelWish from './components/travels/TravelWish';
 import AnimatedBackground from './components/animations/AnimatedBackground';
 import FlightLoadingAnimation from './components/animations/FightLoadingAnimation';
 import { useGetTravelsQuery } from './services/travelApi';
+import { useGetWishesQuery } from './services/wishApi';
 
 function App() {
-  const { data: travels = [], isLoading } = useGetTravelsQuery();
+  const { data: travels = [], isLoading: isLoadingTravels } = useGetTravelsQuery();
+  const { data: wishes = [], isLoading: isLoadingWishes } = useGetWishesQuery();
   const [showContent, setShowContent] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    // Detectar el tema inicial del sistema
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return true; // Valor por defecto
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,6 +28,8 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const isLoading = isLoadingTravels || isLoadingWishes;
 
   return (
     <Box sx={{ position: 'relative', minHeight: '100vh' }}>
@@ -38,7 +49,7 @@ function App() {
           <FlightLoadingAnimation isDark={isDark} />
         </Box>
       ) : (
-        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, py: 1 }}>
+        <Container sx={{ minWidth: '100vw', position: 'relative', zIndex: 1, py: 2 }}>
           <Fade in={showContent} timeout={1000}>
             <Box>
               <Typography 
@@ -47,7 +58,8 @@ function App() {
                 gutterBottom 
                 sx={{ 
                   fontWeight: 700,
-                  mb: 2,
+                  pb: 8,
+                  mb: 4,
                   color: 'primary.main',
                   textAlign: 'left',
                   textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
@@ -65,11 +77,11 @@ function App() {
                   },
                 }}
               >
-                Travel Traker
+                Travel Traker 
               </Typography>
 
               <Grid container spacing={3}>
-                <Grid item xs={12} md={4.2}>
+                <Grid item xs={12} md={3}>
                   <Paper 
                       elevation={3} 
                       sx={{ 
@@ -81,7 +93,19 @@ function App() {
                     <FlightSearch />  
                   </Paper>    
                 </Grid>
-                <Grid item xs={12} md={4.2}>
+                <Grid item xs={12} md={3}>
+                  <Paper 
+                      elevation={3} 
+                      sx={{ 
+                        p: 4, 
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: 2,
+                      }}
+                    >
+                    <TravelDashboard travels={travels} isLoading={isLoading} />
+                  </Paper>    
+                </Grid>
+                <Grid item xs={12} md={3}>
                   <Paper 
                       elevation={3} 
                       sx={{ 
@@ -91,19 +115,19 @@ function App() {
                       }}
                     >
                     <TravelHistory travels={travels} isLoading={isLoading} />
-                  </Paper>
+                  </Paper>    
                 </Grid>
-                <Grid item xs={12} md={3.6}>
+                <Grid item xs={12} md={3}>
                   <Paper 
-                    elevation={3} 
-                    sx={{ 
-                      p: 4, 
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      borderRadius: 2,
-                    }}
-                  >
-                    <TravelDashboard travels={travels} showContent={showContent} />
-                  </Paper>
+                      elevation={3} 
+                      sx={{ 
+                        p: 4, 
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: 2,
+                      }}
+                    >
+                    <TravelWish wishes={wishes} isLoading={isLoading} />
+                  </Paper>    
                 </Grid>
               </Grid>
             </Box>

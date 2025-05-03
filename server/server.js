@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import travelRoutes from './routes/travelRoutes.js';
+import wishRoutes from './routes/wishesRoutes.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -19,6 +20,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', travelRoutes);
+app.use('/api', wishRoutes);
 
 // MongoDB Connection
 const connectDB = async () => {
