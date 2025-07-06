@@ -24,6 +24,11 @@ const travelSchema = new mongoose.Schema({
   isRoundTrip: {
     type: Boolean,
     default: false
+  },
+  images: {
+    type: [String],
+    required: false,
+    default: []
   }
 }, {
   timestamps: true

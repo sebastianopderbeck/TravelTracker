@@ -112,6 +112,7 @@ const ThemeToggle = styled(IconButton)`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
+  border: 2px solid rgba(25, 118, 210, 0.9);
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
@@ -218,7 +219,7 @@ const AnimatedBackground = ({ isLoading = true }) => {
   return (
     <>
       <ThemeToggle onClick={toggleTheme} isDark={isDark}>
-        {isDark ? <WbSunnyIcon sx={{ color: 'white' }} /> : <DarkModeIcon sx={{ color: 'black' }} />}
+        {isDark ? <WbSunnyIcon sx={{ fill: 'white' }} /> : <DarkModeIcon sx={{ fill: 'black' }} />}
       </ThemeToggle>
       <BackgroundContainer isDark={isDark}>
         {/* Países flotantes */}

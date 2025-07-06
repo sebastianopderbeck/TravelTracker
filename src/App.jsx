@@ -1,18 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Box, Container, Typography, Paper, Grid, Fade } from '@mui/material';
-import FlightSearch from './components/flights/FlightSearch';
-import TravelHistory from './components/travels/TravelHistory';
-import TravelDashboard from './components/travels/TravelDashboard';
-import TravelWish from './components/travels/TravelWish';
+import { Box, Fade } from '@mui/material';
 import AnimatedBackground from './components/animations/AnimatedBackground';
 import FlightLoadingAnimation from './components/animations/FightLoadingAnimation';
-import { useGetTravelsQuery } from './services/travelApi';
-import { useGetWishesQuery } from './services/wishApi';
+import Sidebar from './components/Sidebar';
+import MainContent from './components/MainContent';
 
 function App() {
-  const { data: travels = [], isLoading: isLoadingTravels } = useGetTravelsQuery();
-  const { data: wishes = [], isLoading: isLoadingWishes } = useGetWishesQuery();
   const [showContent, setShowContent] = useState(false);
+  const [activeSection, setActiveSection] = useState('history');
   const [isDark, setIsDark] = useState(() => {
     // Detectar el tema inicial del sistema
     if (typeof window !== 'undefined') {
@@ -29,18 +24,16 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const isLoading = isLoadingTravels || isLoadingWishes;
-
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+    <Box sx={{ position: 'relative', width: '100vw', height: '100vh', minHeight: '100vh', minWidth: '100vw', overflow: 'hidden' }}>
       <AnimatedBackground />
       {!showContent ? (
         <Box sx={{ 
           position: 'fixed', 
           top: 0, 
           left: 0, 
-          width: '100%', 
-          height: '100%', 
+          width: '100vw', 
+          height: '100vh', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
@@ -49,90 +42,34 @@ function App() {
           <FlightLoadingAnimation isDark={isDark} />
         </Box>
       ) : (
-        <Container sx={{ minWidth: '100vw', position: 'relative', zIndex: 1, py: 2 }}>
-          <Fade in={showContent} timeout={1000}>
-            <Box>
-              <Typography 
-                variant="h4" 
-                component="h1" 
-                gutterBottom 
-                sx={{ 
-                  fontWeight: 700,
-                  pb: 8,
-                  mb: 4,
-                  color: 'primary.main',
-                  textAlign: 'left',
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                  position: 'relative',
-                  '&:after': {
-                    content: '""',
-                    position: 'absolute',
-                    bottom: -8,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: 100,
-                    height: 4,
-                    backgroundColor: 'primary.main',
-                    borderRadius: 2,
-                  },
-                }}
-              >
-                Travel Traker 
-              </Typography>
-
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={3}>
-                  <Paper 
-                      elevation={3} 
-                      sx={{ 
-                        p: 4, 
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: 2,
-                      }}
-                    >
-                    <FlightSearch />  
-                  </Paper>    
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Paper 
-                      elevation={3} 
-                      sx={{ 
-                        p: 4, 
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: 2,
-                      }}
-                    >
-                    <TravelDashboard travels={travels} isLoading={isLoading} />
-                  </Paper>    
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Paper 
-                      elevation={3} 
-                      sx={{ 
-                        p: 4, 
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: 2,
-                      }}
-                    >
-                    <TravelHistory travels={travels} isLoading={isLoading} />
-                  </Paper>    
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <Paper 
-                      elevation={3} 
-                      sx={{ 
-                        p: 4, 
-                        background: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: 2,
-                      }}
-                    >
-                    <TravelWish wishes={wishes} isLoading={isLoading} />
-                  </Paper>    
-                </Grid>
-              </Grid>
+        <Fade in={showContent} timeout={1000}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', md: 'row' },
+            position: 'relative', 
+            zIndex: 1,
+            width: '100vw',
+            height: '100vh',
+            minHeight: '100vh',
+            minWidth: '100vw',
+            overflow: 'hidden'
+          }}>
+            <Sidebar 
+              activeSection={activeSection} 
+              onSectionChange={setActiveSection} 
+            />
+            <Box sx={{ 
+              flexGrow: 1, 
+              ml: { xs: 0, md: '280px' }, 
+              mt: { xs: 0, md: 0 },
+              height: '100vh',
+              overflow: 'auto',
+              p: { xs: 1, md: 3 }
+            }}>
+              <MainContent activeSection={activeSection} />
             </Box>
-          </Fade>
-        </Container>
+          </Box>
+        </Fade>
       )}
     </Box>
   );

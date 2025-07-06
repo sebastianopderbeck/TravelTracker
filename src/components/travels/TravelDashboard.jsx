@@ -193,30 +193,7 @@ const TravelDashboard = () => {
 
   return (
     <Box>
-      <Typography 
-        variant="h6" 
-        gutterBottom 
-        sx={{ 
-          fontWeight: 600,
-          mb: 3,
-          color: 'primary.main',
-          position: 'relative',
-          textAlign: 'center',
-          '&:after': {
-            content: '""',
-            position: 'absolute',
-            bottom: -8,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 50,
-            height: 3,
-            backgroundColor: 'primary.main',
-            borderRadius: 1,
-          },
-        }}
-      >
-        Estadísticas de Viajes
-      </Typography>
+
       
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

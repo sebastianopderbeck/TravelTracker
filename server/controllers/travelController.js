@@ -243,3 +243,52 @@ export const getFlightInfo = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener información del vuelo' });
   }
 };
+
+// Controlador para subir imagen de un viaje
+export const uploadTravelImage = async (req, res) => {
+  try {
+    const travelId = req.params.id;
+    const imagePath = req.file ? req.file.path : null;
+
+    if (!imagePath) {
+      return res.status(400).json({ message: 'No se subió ninguna imagen' });
+    }
+
+    // Hacer push de la nueva imagen al array images
+    const travel = await Travel.findByIdAndUpdate(
+      travelId,
+      { $push: { images: imagePath } },
+      { new: true }
+    );
+
+    if (!travel) {
+      return res.status(404).json({ message: 'Viaje no encontrado' });
+    }
+
+    res.json(travel);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Controlador para eliminar una imagen específica del array images de un viaje
+export const deleteTravelImage = async (req, res) => {
+  try {
+    const travelId = req.params.id;
+    const { image } = req.body;
+    if (!image) {
+      return res.status(400).json({ message: 'No se especificó la imagen a eliminar' });
+    }
+    const travel = await Travel.findByIdAndUpdate(
+      travelId,
+      { $pull: { images: image } },
+      { new: true }
+    );
+    if (!travel) {
+      return res.status(404).json({ message: 'Viaje no encontrado' });
+    }
+    res.json(travel);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
