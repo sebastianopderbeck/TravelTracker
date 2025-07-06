@@ -1,12 +1,12 @@
-import React from 'react';
-import { Box, Typography, CircularProgress, List, ListItem, ListItemText, ListItemIcon, IconButton } from '@mui/material';
-import FlightIcon from '@mui/icons-material/Flight';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import React, { useState } from 'react';
+import { Box, Typography, CircularProgress, IconButton } from '@mui/material';
+import ListIcon from '@mui/icons-material/List';
+import GridViewIcon from '@mui/icons-material/GridView';
 import { useDeleteTravelMutation, useGetTravelsQuery } from '../../services/travelApi';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getCountryCodeFromIATA } from '../../utils/iataToCountryCode';
+import HistoryList from './HistoryList';
+import HistoryGrid from './HistoryGrid';
 
 const formatDate = (date) => {
   if (!date) return 'No especificada';
@@ -21,6 +21,7 @@ const formatDate = (date) => {
 const TravelHistory = () => {
   const { data: travels, isLoading } = useGetTravelsQuery();
   const [deleteTravel] = useDeleteTravelMutation();
+  const [view, setView] = useState('list'); // 'list' o 'grid'
 
   const handleDelete = async (id) => {
     try {
@@ -45,105 +46,44 @@ const TravelHistory = () => {
 
   return (
     <Box>
-      <Typography 
-        variant="h6" 
-        gutterBottom 
-        sx={{ 
-          fontWeight: 600,
-          mb: 2,
-          color: 'primary.main',
-          position: 'relative',
-          textAlign: 'center',
-          '&:after': {
-            content: '""',
-            position: 'absolute',
-            bottom: -8,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 50,
-            height: 3,
-            backgroundColor: 'primary.main',
-            borderRadius: 1,
-          },
-        }}
-      >
-        Historial de Viajes
-      </Typography>
-      <List>
-        {sortedTravels?.length > 0 ? (
-          sortedTravels.map((travel) => (
-            <ListItem key={travel._id} sx={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-              {/* <ListItemIcon>
-                <FlightIcon color="primary" />
-              </ListItemIcon> */}
-              <ListItemText
-                primary={
-                  <Box display="flex" alignItems="center">
-                    <Typography component="span">
-                      {travel.origin.country} ({travel.origin.iata})
-                      {getCountryCodeFromIATA(travel.origin.iata) && (
-                        <img
-                          src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.origin.iata)}/flat/24.png`}
-                          alt={`${travel.origin.country} flag`}
-                          style={{
-                            marginLeft: 8,
-                            borderRadius: '10px',
-                            width: '24px',
-                            height: '24px',
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    </Typography>
-                    <ArrowForwardIcon sx={{ mx: 1, fontSize: '1rem' }} />
-                    <Typography component="span">
-                      {travel.destination.country} ({travel.destination.iata})
-                      {getCountryCodeFromIATA(travel.destination.iata) && (
-                        <img
-                          src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.destination.iata)}/flat/24.png`}
-                          alt={`${travel.destination.country} flag`}
-                          style={{
-                            marginLeft: 8,
-                            borderRadius: '10px',
-                            width: '24px',
-                            height: '24px', 
-                            verticalAlign: 'middle',
-                          }}
-                        />
-                      )}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Fecha de ida: {formatDate(travel.departureDate)}
-                    </Typography>
-                    {travel.isRoundTrip && travel.returnDate && (
-                      <Typography variant="body2" color="text.secondary">
-                        Fecha de vuelta: {formatDate(travel.returnDate)}
-                      </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      Distancia: {travel.distance.toLocaleString()} km
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Duración: {travel.estimatedFlightTime} horas
-                    </Typography>
-                  </Box>
-                }
-              />
-              <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(travel._id)}>
-                <DeleteIcon />
-              </IconButton>
-            </ListItem>
-          ))
-        ) : (
-          <ListItem>
-            <ListItemText primary="No hay viajes registrados" />
-          </ListItem>
-        )}
-      </List>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Typography 
+          variant="h6" 
+          gutterBottom 
+          sx={{ 
+            fontWeight: 600,
+            color: 'primary.main',
+            position: 'relative',
+            textAlign: 'center',
+            '&:after': {
+              content: '""',
+              position: 'absolute',
+              bottom: -8,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 50,
+              height: 3,
+              backgroundColor: 'primary.main',
+              borderRadius: 1,
+            },
+          }}
+        >
+          Historial de Viajes
+        </Typography>
+        <Box>
+          <IconButton onClick={() => setView('list')} color={view === 'list' ? 'primary' : 'default'}>
+            <ListIcon />
+          </IconButton>
+          <IconButton onClick={() => setView('grid')} color={view === 'grid' ? 'primary' : 'default'}>
+            <GridViewIcon />
+          </IconButton>
+        </Box>
+      </Box>
+      {view === 'list' ? (
+        <HistoryList travels={sortedTravels} onDelete={handleDelete} formatDate={formatDate} />
+      ) : (
+        <HistoryGrid travels={sortedTravels} formatDate={formatDate} />
+      )}
     </Box>
   );
 };

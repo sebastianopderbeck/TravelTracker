@@ -33,6 +33,45 @@ const iataToCountryCode = {
   // Agrega más mapeos aquí
 };
 
+const iataToCityName = {
+  "MAD": "Madrid",
+  "BCN": "Barcelona",
+  "CDG": "París",
+  "JFK": "Nueva York",
+  "LAX": "Los Ángeles",
+  "LHR": "Londres",
+  "NRT": "Tokio",
+  "DXB": "Dubái",
+  "PEK": "Pekín",
+  "SYD": "Sídney",
+  "EZE": "Buenos Aires",
+  "GRU": "São Paulo",
+  "MEX": "Ciudad de México",
+  "SCL": "Santiago de Chile",
+  "BOG": "Bogotá",
+  "NCE": "Niza",
+  "MXP": "Milán",
+  "FLR": "Florencia",
+  "FCO": "Roma",
+  "NAP": "Nápoles",
+  "JTR": "Santorini",
+  "ATH": "Atenas",
+  "OPO": "Oporto",
+  "LIS": "Lisboa",
+  "RAK": "Marrakech",
+  "TTU": "Tetuán",
+  "MRS": "Marsella",
+  "PRG": "Praga",
+  "BRU": "Bruselas",
+  "BUD": "Budapest",
+  "BER": "Berlín",
+  // Agrega más mapeos aquí
+};
+
 export const getCountryCodeFromIATA = (iataCode) => {
   return iataToCountryCode[iataCode.toUpperCase()] || null;
+};
+
+export const getCityNameFromIATA = (iataCode) => {
+  return iataToCityName[iataCode.toUpperCase()] || null;
 }; 
