@@ -181,7 +181,7 @@ export const getFlightInfo = async (req, res) => {
     // Obtener información del vuelo desde Aviationstack
     const response = await axios.get('http://api.aviationstack.com/v1/flights', {
       params: {
-        access_key: process.env.AVIATIONSTACK_API_KEY,
+        access_key: "284836080d1151a92dc5d96e722783b9",
         dep_iata: origin.toUpperCase(),
         arr_iata: destination.toUpperCase(),
         limit: 1

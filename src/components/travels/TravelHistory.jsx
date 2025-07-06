@@ -6,6 +6,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useDeleteTravelMutation, useGetTravelsQuery } from '../../services/travelApi';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getCountryCodeFromIATA } from '../../utils/iataToCountryCode';
 
 const formatDate = (date) => {
   if (!date) return 'No especificada';
@@ -67,18 +68,44 @@ const TravelHistory = () => {
         {travels?.length > 0 ? (
           travels.map((travel) => (
             <ListItem key={travel._id} sx={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-              <ListItemIcon>
+              {/* <ListItemIcon>
                 <FlightIcon color="primary" />
-              </ListItemIcon>
+              </ListItemIcon> */}
               <ListItemText
                 primary={
                   <Box display="flex" alignItems="center">
                     <Typography component="span">
-                      {travel.origin.country} ({travel.origin.iata})
+                      ({travel.origin.iata})
+                      {getCountryCodeFromIATA(travel.origin.iata) && (
+                        <img
+                          src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.origin.iata)}/flat/24.png`}
+                          alt={`${travel.origin.country} flag`}
+                          style={{
+                            marginLeft: 8,
+                            borderRadius: '10px',
+                            width: '24px',
+                            height: '24px',
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      )}
                     </Typography>
                     <ArrowForwardIcon sx={{ mx: 1, fontSize: '1rem' }} />
                     <Typography component="span">
-                      {travel.destination.country} ({travel.destination.iata})
+                      ({travel.destination.iata})
+                      {getCountryCodeFromIATA(travel.destination.iata) && (
+                        <img
+                          src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.destination.iata)}/flat/24.png`}
+                          alt={`${travel.destination.country} flag`}
+                          style={{
+                            marginLeft: 8,
+                            borderRadius: '10px',
+                            width: '24px',
+                            height: '24px', 
+                            verticalAlign: 'middle',
+                          }}
+                        />
+                      )}
                     </Typography>
                   </Box>
                 }
