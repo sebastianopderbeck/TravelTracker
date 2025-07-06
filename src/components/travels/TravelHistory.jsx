@@ -38,6 +38,11 @@ const TravelHistory = () => {
     );
   }
 
+  // Ordenar los viajes por departureDate antes de mostrarlos
+  const sortedTravels = travels ? [...travels].sort((a, b) => {
+    return new Date(b.departureDate) - new Date(a.departureDate);
+  }) : [];
+
   return (
     <Box>
       <Typography 
@@ -65,8 +70,8 @@ const TravelHistory = () => {
         Historial de Viajes
       </Typography>
       <List>
-        {travels?.length > 0 ? (
-          travels.map((travel) => (
+        {sortedTravels?.length > 0 ? (
+          sortedTravels.map((travel) => (
             <ListItem key={travel._id} sx={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
               {/* <ListItemIcon>
                 <FlightIcon color="primary" />
@@ -75,7 +80,7 @@ const TravelHistory = () => {
                 primary={
                   <Box display="flex" alignItems="center">
                     <Typography component="span">
-                      ({travel.origin.iata})
+                      {travel.origin.country} ({travel.origin.iata})
                       {getCountryCodeFromIATA(travel.origin.iata) && (
                         <img
                           src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.origin.iata)}/flat/24.png`}
@@ -92,7 +97,7 @@ const TravelHistory = () => {
                     </Typography>
                     <ArrowForwardIcon sx={{ mx: 1, fontSize: '1rem' }} />
                     <Typography component="span">
-                      ({travel.destination.iata})
+                      {travel.destination.country} ({travel.destination.iata})
                       {getCountryCodeFromIATA(travel.destination.iata) && (
                         <img
                           src={`https://flagsapi.com/${getCountryCodeFromIATA(travel.destination.iata)}/flat/24.png`}

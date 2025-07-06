@@ -29,6 +29,7 @@ const iataToCountryCode = {
   "PRG": "CZ", // Prague, Czech Republic
   "BRU": "BE", // Brussels, Belgium
   "BUD": "HU", // Budapest, Hungary
+  "BER": "DE", // Berlin, Germany
   // Agrega más mapeos aquí
 };
 
