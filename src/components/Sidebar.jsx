@@ -84,7 +84,7 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
         <Divider sx={{ mb: { xs: 1, md: 2 }, display: { xs: 'none', md: 'block' } }} />
         
         <List sx={{ 
-          display: { xs: 'flex', md: 'block' },
+          display: { xs: 'flex', md: 'flex' },
           flexDirection: { xs: 'row', md: 'column' },
           gap: { xs: 1, md: 0 }
         }}>

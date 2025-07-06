@@ -112,8 +112,10 @@ const ThemeToggle = styled(IconButton)`
   z-index: 10;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
-  border: 2px solid rgba(25, 118, 210, 0.9);
+  border: 1px solid #0a1929;
+  outline: 0;
   &:hover {
+    border: 1px solid #0a1929;
     background-color: rgba(255, 255, 255, 0.2);
   }
   & .MuiSvgIcon-root {
