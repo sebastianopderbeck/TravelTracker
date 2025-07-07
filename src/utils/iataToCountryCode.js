@@ -103,6 +103,31 @@ const iataToCoordinates = {
   // Agrega más mapeos aquí
 };
 
+const countryCodeToName = {
+  "ES": "Spain",
+  "FR": "France",
+  "US": "United States of America",
+  "GB": "United Kingdom",
+  "JP": "Japan",
+  "AE": "United Arab Emirates",
+  "CN": "China",
+  "AU": "Australia",
+  "AR": "Argentina",
+  "BR": "Brazil",
+  "MX": "Mexico",
+  "CL": "Chile",
+  "CO": "Colombia",
+  "IT": "Italy",
+  "GR": "Greece",
+  "PT": "Portugal",
+  "MA": "Morocco",
+  "CZ": "Czech Republic",
+  "BE": "Belgium",
+  "HU": "Hungary",
+  "DE": "Germany",
+  // Agrega más mapeos según lo que tengas en features.json
+};
+
 export const getCountryCodeFromIATA = (iataCode) => {
   return iataToCountryCode[iataCode.toUpperCase()] || null;
 };
@@ -113,4 +138,8 @@ export const getCityNameFromIATA = (iataCode) => {
 
 export const getCoordinatesFromIATA = (iataCode) => {
   return iataToCoordinates[iataCode.toUpperCase()] || null;
+};
+
+export const getCountryNameFromCode = (code) => {
+  return countryCodeToName[code.toUpperCase()] || null;
 }; 

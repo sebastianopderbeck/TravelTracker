@@ -10,14 +10,18 @@ import {
   Line,
 } from 'react-simple-maps';
 import { useGetTravelsQuery } from '../../services/travelApi';
-import { getCityNameFromIATA, getCoordinatesFromIATA, getCountryCodeFromIATA } from '../../utils/iataToCountryCode';
+import { getCityNameFromIATA, getCoordinatesFromIATA, getCountryCodeFromIATA, getCountryNameFromCode } from '../../utils/iataToCountryCode';
 import './WorldMap.css';
+import ImageGallery from '../history/ImageGallery';
 
 const WorldMap = () => {
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const { data: travels = [], isLoading } = useGetTravelsQuery();
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   const handleZoomIn = () => {
     setPosition(prev => ({
@@ -66,16 +70,22 @@ const WorldMap = () => {
     setIsDragging(false);
   };
 
-  // Obtener países visitados
-  const visitedCountries = useMemo(() => {
-    const countries = new Set();
+  // Obtener nombres de países visitados
+  const visitedCountryNames = useMemo(() => {
+    const names = new Set();
     travels.forEach(travel => {
       const originCountry = getCountryCodeFromIATA(travel.origin.iata);
       const destCountry = getCountryCodeFromIATA(travel.destination.iata);
-      if (originCountry) countries.add(originCountry);
-      if (destCountry) countries.add(destCountry);
+      if (originCountry) {
+        const originName = getCountryNameFromCode(originCountry);
+        if (originName) names.add(originName);
+      }
+      if (destCountry) {
+        const destName = getCountryNameFromCode(destCountry);
+        if (destName) names.add(destName);
+      }
     });
-    return countries;
+    return names;
   }, [travels]);
 
   // Convertir los viajes a rutas para el mapa
@@ -165,21 +175,36 @@ const WorldMap = () => {
           <Geographies geography="/features.json">
             {({ geographies }) =>
               geographies.map((geo) => {
-                const isVisited = visitedCountries.has(geo.properties.ISO_A2);
+                const countryName = geo.properties.name;
+                const isVisited = countryName && visitedCountryNames.has(countryName);
+                console.log(visitedCountryNames, geo.properties);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={isVisited ? "#4CAF50" : "#EAEAEC"}
+                    fill={isVisited ? "#4CAF50" : "#B0B0B0"}
                     stroke="#D6D6DA"
                     strokeWidth={0.5}
                     style={{
                       default: { outline: 'none' },
                       hover: { 
-                        fill: isVisited ? '#66BB6A' : '#F5F5F5', 
-                        outline: 'none' 
+                        fill: isVisited ? '#4CAF50' : '#B0B0B0',
+                        outline: 'none'
                       },
                       pressed: { outline: 'none' },
+                    }}
+                    onClick={() => {
+                      setSelectedCountry(countryName);
+                      // Filtrar imágenes de los viajes relacionados con ese país
+                      const images = travels
+                        .filter(travel => {
+                          const originCountry = getCountryNameFromCode(getCountryCodeFromIATA(travel.origin.iata));
+                          const destCountry = getCountryNameFromCode(getCountryCodeFromIATA(travel.destination.iata));
+                          return originCountry === countryName || destCountry === countryName;
+                        })
+                        .flatMap(travel => travel.images || []);
+                      setGalleryImages(images);
+                      setGalleryOpen(true);
                     }}
                   />
                 );
@@ -190,13 +215,13 @@ const WorldMap = () => {
           {/* Marcadores de ciudades únicas */}
           {Array.from(uniqueCities.values()).map((city, index) => (
             <Marker key={`city-${index}`} coordinates={city.coordinates}>
-              <circle r={4} fill="#1976D2" opacity={0.8} />
+              <circle r={4} fill="#111" opacity={0.8} />
               <text
                 textAnchor="middle"
                 y={-10}
                 style={{ 
                   fontFamily: "system-ui", 
-                  fill: "#5D5A6D", 
+                  fill: "#111", 
                   fontSize: "10px",
                   fontWeight: "bold"
                 }}
@@ -256,7 +281,7 @@ const WorldMap = () => {
         </Box>
 
         {/* Leyenda de países visitados */}
-        {visitedCountries.size > 0 && (
+        {visitedCountryNames.size > 0 && (
           <Box 
             sx={{ 
               position: 'absolute', 
@@ -282,7 +307,7 @@ const WorldMap = () => {
                 }} 
               />
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                {visitedCountries.size} países
+                {visitedCountryNames.size} países
               </Typography>
             </Box>
           </Box>
@@ -313,6 +338,13 @@ const WorldMap = () => {
             {position.zoom !== 1 && ` • Zoom: ${Math.round(position.zoom * 100)}%`}
           </Typography>
         </Box>
+
+        {/* Galería de fotos por país */}
+        <ImageGallery
+          open={galleryOpen}
+          images={galleryImages}
+          onClose={() => setGalleryOpen(false)}
+        />
       </Box>
   );
 };

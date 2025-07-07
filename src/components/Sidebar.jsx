@@ -68,11 +68,12 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
       <Box sx={{ p: { xs: 1, md: 3 } }}>
         <Box sx={{ 
           display: 'flex', 
-          flexDirection: { xs: 'row', md: 'column' },
+          flexDirection: { xs: 'column', md: 'column' },
           alignItems: 'center', 
           mb: { xs: 1, md: 3 },
           justifyContent: { xs: 'space-around', md: 'flex-start' }
         }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <FlightIcon sx={{ fontSize: { xs: 24, md: 32 }, color: 'primary.main', mr: { xs: 0, md: 2 } }} />
           <Typography 
             variant="h5" 
@@ -85,6 +86,7 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
           >
             Travel Tracker
           </Typography>
+          </div>
         </Box>
         
         <Divider sx={{ mb: { xs: 1, md: 2 }, display: { xs: 'none', md: 'block' } }} />
