@@ -4,6 +4,7 @@ import TravelHistory from './history/TravelHistory';
 import TravelDashboard from './travels/TravelDashboard';
 import FlightSearch from './flights/FlightSearch';
 import TravelWish from './travels/TravelWish';
+import WorldMap from './worldmap/WorldMap';
 import { useGetTravelsQuery } from '../services/travelApi';
 import { useGetWishesQuery } from '../services/wishApi';
 
@@ -136,6 +137,37 @@ const MainContent = ({ activeSection }) => {
               Lista de Deseos
             </Typography>
             <TravelWish />
+          </Box>
+        );
+      
+      case 'worldmap':
+        return (
+          <Box>
+            <Typography 
+              variant="h4" 
+              gutterBottom 
+              sx={{ 
+                fontWeight: 700,
+                mb: 3,
+                color: 'primary.main',
+                textAlign: 'center',
+                position: 'relative',
+                '&:after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: -8,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 100,
+                  height: 4,
+                  backgroundColor: 'primary.main',
+                  borderRadius: 2,
+                },
+              }}
+            >
+              Mapa Mundial
+            </Typography>
+            <WorldMap />
           </Box>
         );
       

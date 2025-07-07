@@ -1,0 +1,96 @@
+@keyframes airplane-fly {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05) rotate(0deg);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(-5deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.airplane-animation {
+  animation: airplane-fly 3s ease-in-out;
+}
+
+/* Efectos de hover para los países */
+.rsm-geography:hover {
+  fill: #F5F5F5 !important;
+  cursor: pointer;
+  transition: fill 0.3s ease;
+}
+
+/* Animación de pulso para los marcadores de ciudades */
+@keyframes marker-pulse {
+  0% {
+    r: 3;
+    opacity: 0.8;
+  }
+  50% {
+    r: 4;
+    opacity: 1;
+  }
+  100% {
+    r: 3;
+    opacity: 0.8;
+  }
+}
+
+circle[fill="#1976D2"], circle[fill="#D32F2F"] {
+  animation: marker-pulse 2s ease-in-out infinite;
+}
+
+/* Efecto de brillo en la línea de ruta */
+@keyframes route-glow {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.6;
+  }
+  50% {
+    stroke-dashoffset: -10;
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.6;
+  }
+}
+
+.rsm-line {
+  animation: route-glow 2s ease-in-out infinite;
+}
+
+/* Estilos para el texto de las ciudades */
+.rsm-text {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Efecto de sombra para el avión */
+.airplane-animation svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .rsm-text {
+    font-size: 8px !important;
+  }
+  
+  circle[fill="#1976D2"], circle[fill="#D32F2F"] {
+    r: 2;
+  }
+} 

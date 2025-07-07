@@ -16,6 +16,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import HistoryIcon from '@mui/icons-material/History';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import SearchIcon from '@mui/icons-material/Search';
+import PublicIcon from '@mui/icons-material/Public';
 
 const drawerWidth = 280;
 
@@ -39,6 +40,11 @@ const menuItems = [
     text: 'Lista de Deseos', 
     icon: <FavoriteIcon />, 
     value: 'wishes' 
+  },
+  { 
+    text: 'Mapa Mundial', 
+    icon: <PublicIcon />, 
+    value: 'worldmap' 
   },
 ];
 
