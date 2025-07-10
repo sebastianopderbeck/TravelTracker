@@ -13,6 +13,30 @@ const HistoryGrid = ({ travels = [], formatDate }) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [selectedTravelId, setSelectedTravelId] = useState(null); // Nuevo estado para el ID del viaje seleccionado
+
+  // Filtrar viajes para mostrar solo una card por ciudad de destino
+  const uniqueCityTravels = travels.reduce((acc, travel) => {
+    const cityKey = travel.destination?.iata || travel.destination?.name;
+    if (!cityKey) return acc;
+    
+    // Si ya existe un viaje para esta ciudad, mantener el más reciente
+    if (acc.has(cityKey)) {
+      const existingTravel = acc.get(cityKey);
+      const existingDate = new Date(existingTravel.departureDate);
+      const newDate = new Date(travel.departureDate);
+      
+      if (newDate > existingDate) {
+        acc.set(cityKey, travel);
+      }
+    } else {
+      acc.set(cityKey, travel);
+    }
+    
+    return acc;
+  }, new Map());
+
+  const filteredTravels = Array.from(uniqueCityTravels.values());
 
   const handleImageUpload = async (e, viaje) => {
     const file = e.target.files[0];
@@ -46,13 +70,14 @@ const HistoryGrid = ({ travels = [], formatDate }) => {
       setGalleryImages(viaje.images);
       setGalleryIndex(0);
       setGalleryOpen(true);
+      setSelectedTravelId(viaje._id); // Agregar estado para el ID del viaje
     }
   };
 
   return (
     <div className="history-grid-container">
       <div className="history-grid">
-        {travels.map((viaje, idx) => {
+        {filteredTravels.map((viaje, idx) => {
           const fileInputRef = useRef();
           // Determinar la imagen a mostrar: preview local, imagen del backend, o placeholder
           let imgSrc = imagePreviews[viaje._id];
@@ -105,6 +130,7 @@ const HistoryGrid = ({ travels = [], formatDate }) => {
         images={galleryImages}
         initialIndex={galleryIndex}
         onClose={() => setGalleryOpen(false)}
+        travelId={selectedTravelId}
       />
     </div>
   );

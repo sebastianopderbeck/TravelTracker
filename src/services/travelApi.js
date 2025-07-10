@@ -38,6 +38,14 @@ export const travelApi = createApi({
       }),
       invalidatesTags: ['Travel'],
     }),
+    deleteTravelImage: builder.mutation({
+      query: ({ travelId, image }) => ({
+        url: `travels/${travelId}/image`,
+        method: 'DELETE',
+        body: { image },
+      }),
+      invalidatesTags: ['Travels'],
+    }),
   }),
 });
 
@@ -48,4 +56,5 @@ export const {
   useAddTravelMutation,
   useDeleteTravelMutation,
   useDeleteAllTravelsMutation,
+  useDeleteTravelImageMutation,
 } = travelApi; 

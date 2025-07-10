@@ -27,6 +27,16 @@ export const saveTravel = createAsyncThunk(
   }
 );
 
+export const deleteTravelImage = createAsyncThunk(
+  'travels/deleteTravelImage',
+  async ({ travelId, image }) => {
+    const response = await axios.delete(`${API_URL}/travels/${travelId}/image`, {
+      data: { image }
+    });
+    return response.data;
+  }
+);
+
 const initialState = {
   travels: [],
   currentFlightInfo: null,
@@ -84,6 +94,23 @@ const travelsSlice = createSlice({
       .addCase(saveTravel.rejected, (state, action) => {
         state.loading = false;
         state.error = 'Error al guardar el viaje';
+      })
+      // Delete Travel Image
+      .addCase(deleteTravelImage.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteTravelImage.fulfilled, (state, action) => {
+        state.loading = false;
+        // Actualizar el viaje en el estado si es necesario
+        const updatedTravel = action.payload;
+        const index = state.travels.findIndex(travel => travel._id === updatedTravel._id);
+        if (index !== -1) {
+          state.travels[index] = updatedTravel;
+        }
+      })
+      .addCase(deleteTravelImage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = 'Error al eliminar la imagen';
       });
   }
 });

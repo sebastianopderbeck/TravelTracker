@@ -5,6 +5,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import GridViewIcon from '@mui/icons-material/GridView';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useDispatch } from 'react-redux';
+import { deleteTravelImage } from '../../features/travels/travelsSlice';
 
 const style = {
   position: 'fixed',
@@ -23,10 +25,11 @@ const style = {
   overflow: 'hidden',
 };
 
-const ImageGallery = ({ open, images = [], initialIndex = 0, onClose }) => {
+const ImageGallery = ({ open, images = [], initialIndex = 0, onClose, travelId }) => {
   const [current, setCurrent] = useState(initialIndex);
   const [mode, setMode] = useState('grid'); // 'grid' o 'single'
   const [galleryImages, setGalleryImages] = useState(images);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (open) {
@@ -61,9 +64,23 @@ const ImageGallery = ({ open, images = [], initialIndex = 0, onClose }) => {
   const handleDelete = (e) => {
     e.stopPropagation();
     if (galleryImages.length === 0) return;
+    
+    const imageToDelete = galleryImages[current];
     const newImages = galleryImages.filter((_, idx) => idx !== current);
     setGalleryImages(newImages);
-    // TODO: Aquí puedes agregar la llamada al backend para eliminar la imagen del viaje
+    
+    if (travelId) {
+      const deleteImageFromBackend = async () => {
+        try {
+          await dispatch(deleteTravelImage({ travelId, image: imageToDelete })).unwrap();
+        } catch (error) {
+          setGalleryImages(galleryImages);
+        }
+      };
+      
+      deleteImageFromBackend();
+    }
+    
     if (newImages.length === 0) {
       setMode('grid');
     } else if (current >= newImages.length) {

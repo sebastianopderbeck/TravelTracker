@@ -344,6 +344,7 @@ const WorldMap = () => {
           open={galleryOpen}
           images={galleryImages}
           onClose={() => setGalleryOpen(false)}
+          travelId={null} // Para galería de país, no tenemos un travelId específico
         />
       </Box>
   );
